@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Fairteamsbuilder - Pools verwalten</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#16a34a" />
+    <link rel="stylesheet" href="./theme.css" />
+    <style>
+      header {
+        background: #ffffff !important;
+        color: #111827 !important;
+        border-bottom: 1px solid var(--border);
+        padding: 0.9rem 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+
+      header h1 {
+        font-size: 1.15rem;
+        letter-spacing: -0.5px;
+        display: flex;
+        align-items: center;
+        gap: 0.45rem;
+      }
+
+      .page {
+        max-width: 1180px;
+        margin: 0 auto;
+        padding: 1rem;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1rem;
+      }
+
+      .card {
+        padding: 1rem 1.2rem;
+      }
+
+      .muted {
+        color: var(--text-muted);
+        font-size: 0.85rem;
+      }
+
+      .row {
+        display: flex;
+        gap: 0.6rem;
+        align-items: flex-end;
+        flex-wrap: wrap;
+      }
+
+      .pool-list {
+        list-style: none;
+        padding: 0;
+        margin: 0.6rem 0 0 0;
+        border: 1px solid var(--border);
+        border-radius: 0.5rem;
+        background: rgba(0, 0, 0, 0.02);
+        max-height: 280px;
+        overflow-y: auto;
+      }
+
+      .pool-list li {
+        padding: 0.5rem 0.7rem;
+        border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+        display: flex;
+        align-items: center;
+        gap: 0.45rem;
+      }
+
+      .pool-list li:last-child {
+        border-bottom: none;
+      }
+
+      .item-label {
+        flex: 1;
+        min-width: 0;
+      }
+
+      .badge {
+        background: var(--primary-soft);
+        color: white;
+        padding: 0.1rem 0.5rem;
+        border-radius: 999px;
+        font-size: 0.72rem;
+      }
+
+      .actions {
+        display: flex;
+        gap: 0.25rem;
+      }
+
+      .overview-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 0.6rem;
+      }
+
+      .stat {
+        border: 1px solid var(--border);
+        border-radius: 0.6rem;
+        background: rgba(0, 0, 0, 0.02);
+        padding: 0.6rem;
+      }
+
+      .stat-label {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+      }
+
+      .stat-value {
+        font-weight: 700;
+        font-size: 1.05rem;
+      }
+
+      .status-message {
+        border: 1px solid var(--border);
+        border-radius: 0.5rem;
+        padding: 0.6rem 0.8rem;
+        margin: 0.8rem auto 0;
+        max-width: 1180px;
+        font-size: 0.85rem;
+        display: none;
+      }
+
+      .status-message.show {
+        display: block;
+      }
+
+      .status-message.info {
+        background: rgba(22, 163, 74, 0.1);
+        border-color: rgba(22, 163, 74, 0.35);
+      }
+
+      .status-message.success {
+        background: rgba(22, 163, 74, 0.12);
+        border-color: rgba(22, 163, 74, 0.35);
+      }
+
+      .status-message.error {
+        background: rgba(185, 28, 28, 0.12);
+        border-color: rgba(185, 28, 28, 0.35);
+      }
+
+      .auth-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 0.6rem;
+      }
+    </style>
+  </head>
+
+  <body>
+    <header>
+      <h1><span class="logo-dot"></span> Fairteamsbuilder - Pools verwalten</h1>
+      <div class="row">
+        <a href="./index.html" style="text-decoration: none"><button class="primary">Zum Builder</button></a>
+        <button id="darkModeToggle" class="ghost small">🌓 Dark Mode</button>
+      </div>
+    </header>
+
+    <div id="statusMessage" class="status-message" aria-live="polite" role="status"></div>
+
+    <main class="page">
+      <section class="card">
+        <h2>📁 Kategorien</h2>
+        <p class="muted">Kategorien strukturieren deine Pools.</p>
+
+        <div class="row">
+          <div style="flex: 1; min-width: 180px">
+            <label for="categoryInput">Neue Kategorie</label>
+            <input id="categoryInput" type="text" placeholder="z.B. 1A Mädchen" />
+          </div>
+          <button id="addCategoryBtn" class="primary">+ Kategorie</button>
+        </div>
+
+        <ul id="categoryList" class="pool-list"></ul>
+      </section>
+
+      <section class="card">
+        <h2>👥 Pools</h2>
+        <p class="muted" id="poolHint">Wähle zuerst eine Kategorie.</p>
+
+        <div class="row">
+          <div style="flex: 1; min-width: 180px">
+            <label for="poolInput">Neuer Pool</label>
+            <input id="poolInput" type="text" placeholder="z.B. Basketball" disabled />
+          </div>
+          <button id="addPoolBtn" class="primary" disabled>+ Pool</button>
+        </div>
+
+        <ul id="poolList" class="pool-list"></ul>
+      </section>
+
+      <section class="card">
+        <h2>🧍 Spieler</h2>
+        <p class="muted" id="playerHint">Wähle zuerst einen Pool.</p>
+
+        <div class="row">
+          <div style="flex: 1; min-width: 180px">
+            <label for="playerInput">Neuer Spieler</label>
+            <input id="playerInput" type="text" placeholder="Name" disabled />
+          </div>
+
+          <div style="width: 110px">
+            <label for="skillSelect">Stärke</label>
+            <select id="skillSelect" disabled>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3" selected>3</option>
+              <option value="4">4</option>
+            </select>
+          </div>
+
+          <button id="addPlayerBtn" class="primary" disabled>+ Spieler</button>
+        </div>
+
+        <ul id="playerList" class="pool-list"></ul>
+      </section>
+
+      <section class="card">
+        <h2>📊 Übersicht & Cloud</h2>
+        <div class="overview-grid">
+          <div class="stat">
+            <div class="stat-label">Kategorien</div>
+            <div class="stat-value" id="statCategories">0</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">Pools</div>
+            <div class="stat-value" id="statPools">0</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">Spieler</div>
+            <div class="stat-value" id="statPlayers">0</div>
+          </div>
+        </div>
+
+        <div style="margin-top: 1rem">
+          <button id="exportJSONBtn" class="ghost small">JSON Export</button>
+          <button id="importJSONBtn" class="ghost small">JSON Import</button>
+        </div>
+
+        <h3 style="margin-top: 1rem">🔐 Login (Supabase)</h3>
+        <div class="auth-grid">
+          <div>
+            <label for="authEmail">E-Mail</label>
+            <input id="authEmail" type="text" placeholder="name@schule.at" autocomplete="username" />
+          </div>
+          <div>
+            <label for="authPassword">Passwort</label>
+            <input id="authPassword" type="password" autocomplete="current-password" />
+          </div>
+        </div>
+        <div class="row" style="margin-top: 0.6rem">
+          <button id="signInBtn" class="secondary small">Anmelden</button>
+          <button id="signUpBtn" class="ghost small">Registrieren</button>
+          <button id="signOutBtn" class="danger small" disabled>Abmelden</button>
+        </div>
+        <p id="authUserLabel" class="muted">Nicht angemeldet.</p>
+        <p id="authStatus" class="muted" style="margin-top: 0.2rem"></p>
+        <div class="row" style="margin-top: 0.4rem">
+          <button id="cloudLoadBtn" class="ghost small" disabled>Cloud laden</button>
+          <button id="cloudSaveBtn" class="ghost small" disabled>Cloud speichern</button>
+        </div>
+      </section>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="./supabase-config.local.js"></script>
+    <script src="./supabase-config.js"></script>
+    <script src="./js/pool-manager.js"></script>
+    <script src="./js/pool-manager-ui.js"></script>
+    <script src="./js/auth-cloud.js"></script>
+  </body>
+</html>
