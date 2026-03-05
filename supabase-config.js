@@ -1,7 +1,8 @@
 (function applyFairteamsSupabaseConfig(global) {
   const defaults = {
-    url: '',
-    anonKey: ''
+    url: 'https://ylzqzvrttxzaxpylhfig.supabase.co',
+    // Publishable Key (anon): darf im Frontend stehen.
+    anonKey: 'sb_publishable_2tYyaRDL8vLaPzVw1KfdfA_KY7rJirL'
   };
 
   const localOverride =
