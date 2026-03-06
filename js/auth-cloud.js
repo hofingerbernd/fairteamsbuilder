@@ -55,6 +55,23 @@
     }
   }
 
+  function mapAuthErrorMessage(error) {
+    const raw = String((error && error.message) || '').trim();
+    const lower = raw.toLowerCase();
+
+    if (!raw) return 'Unbekannter Fehler.';
+    if (lower.includes('email rate limit exceeded')) {
+      return 'Zu viele Registrierungsversuche. Bitte kurz warten und erneut versuchen.';
+    }
+    if (lower.includes('invalid login credentials')) {
+      return 'Benutzername oder Passwort ist falsch.';
+    }
+    if (lower.includes('user already registered')) {
+      return 'Benutzername ist bereits registriert. Bitte anmelden.';
+    }
+    return raw;
+  }
+
   function readConfig() {
     const url = String(global.FAIRTEAMS_SUPABASE_URL || '').trim();
     const key = String(global.FAIRTEAMS_SUPABASE_ANON_KEY || '').trim();
@@ -63,6 +80,10 @@
 
   function renderAuthState() {
     const userLabel = document.getElementById('authUserLabel');
+    const emailInput = document.getElementById('authEmail');
+    const passwordInput = document.getElementById('authPassword');
+    const signInBtn = document.getElementById('signInBtn');
+    const signUpBtn = document.getElementById('signUpBtn');
     const signOutBtn = document.getElementById('signOutBtn');
     const loadBtn = document.getElementById('cloudLoadBtn');
     const saveBtn = document.getElementById('cloudSaveBtn');
@@ -71,6 +92,10 @@
     if (userLabel) {
       userLabel.textContent = loggedIn ? `Angemeldet: ${displayNameFromUser(authState.user)}` : 'Nicht angemeldet.';
     }
+    if (emailInput) emailInput.disabled = loggedIn;
+    if (passwordInput) passwordInput.disabled = loggedIn;
+    if (signInBtn) signInBtn.disabled = loggedIn;
+    if (signUpBtn) signUpBtn.disabled = loggedIn;
     if (signOutBtn) signOutBtn.disabled = !loggedIn;
     if (loadBtn) loadBtn.disabled = !loggedIn;
     if (saveBtn) saveBtn.disabled = !loggedIn;
@@ -93,9 +118,11 @@
 
     const { error } = await authState.client.auth.signInWithPassword({ email, password });
     if (error) {
-      setAuthStatus(`Anmeldung fehlgeschlagen: ${error.message}`, true);
+      setAuthStatus(`Anmeldung fehlgeschlagen: ${mapAuthErrorMessage(error)}`, true);
       return;
     }
+    const passwordInput = document.getElementById('authPassword');
+    if (passwordInput) passwordInput.value = '';
     setAuthStatus('Anmeldung erfolgreich.', false);
   }
 
@@ -128,7 +155,7 @@
       }
     });
     if (error) {
-      setAuthStatus(`Registrierung fehlgeschlagen: ${error.message}`, true);
+      setAuthStatus(`Registrierung fehlgeschlagen: ${mapAuthErrorMessage(error)}`, true);
       return;
     }
 
@@ -147,9 +174,11 @@
     if (!authState.client) return;
     const { error } = await authState.client.auth.signOut();
     if (error) {
-      setAuthStatus(`Abmeldung fehlgeschlagen: ${error.message}`, true);
+      setAuthStatus(`Abmeldung fehlgeschlagen: ${mapAuthErrorMessage(error)}`, true);
       return;
     }
+    const passwordInput = document.getElementById('authPassword');
+    if (passwordInput) passwordInput.value = '';
     setAuthStatus('Abgemeldet.', false);
   }
 
@@ -167,7 +196,7 @@
 
     const { error } = await authState.client.from(TABLE).upsert(payload, { onConflict: 'user_id' });
     if (error) {
-      setAuthStatus(`Cloud speichern fehlgeschlagen: ${error.message}`, true);
+      setAuthStatus(`Cloud speichern fehlgeschlagen: ${mapAuthErrorMessage(error)}`, true);
       return;
     }
     setAuthStatus('Cloud speichern erfolgreich.', false);
@@ -186,7 +215,7 @@
       .maybeSingle();
 
     if (error) {
-      setAuthStatus(`Cloud laden fehlgeschlagen: ${error.message}`, true);
+      setAuthStatus(`Cloud laden fehlgeschlagen: ${mapAuthErrorMessage(error)}`, true);
       return;
     }
     if (!data || !data.app_state) {
@@ -247,7 +276,7 @@
 
     const { data, error } = await authState.client.auth.getSession();
     if (error) {
-      setAuthStatus(`Session konnte nicht geladen werden: ${error.message}`, true);
+      setAuthStatus(`Session konnte nicht geladen werden: ${mapAuthErrorMessage(error)}`, true);
     }
 
     authState.user = data && data.session ? data.session.user : null;
