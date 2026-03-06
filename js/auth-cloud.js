@@ -1,5 +1,6 @@
 (function initFairteamsAuthCloud(global) {
   const TABLE = 'fairteams_user_states';
+  const USERNAME_EMAIL_DOMAIN = 'fairteamsbuilder.app';
 
   const authState = {
     client: null,
@@ -19,7 +20,7 @@
     if (!raw) return '';
     if (raw.includes('@')) return raw;
     const normalized = normalizeUsername(raw);
-    return normalized ? `${normalized}@fairteams.local` : '';
+    return normalized ? `${normalized}@${USERNAME_EMAIL_DOMAIN}` : '';
   }
 
   function readCredentials() {
@@ -37,7 +38,9 @@
         : '';
     if (metaUsername) return metaUsername;
     const email = String(user.email || '').trim();
-    if (email.endsWith('@fairteams.local')) return email.replace('@fairteams.local', '');
+    if (email.endsWith(`@${USERNAME_EMAIL_DOMAIN}`)) {
+      return email.replace(`@${USERNAME_EMAIL_DOMAIN}`, '');
+    }
     return email || user.id;
   }
 
@@ -80,7 +83,7 @@
     }
     const { usernameOrEmail, email, password } = readCredentials();
     if (!usernameOrEmail || !password) {
-      setAuthStatus('Bitte einen Benutzernamen und ein Passwort anlegen.', true);
+      setAuthStatus('Bitte Benutzername und Passwort eingeben.', true);
       return;
     }
     if (!email) {
@@ -103,7 +106,7 @@
     }
     const { usernameOrEmail, email, password } = readCredentials();
     if (!usernameOrEmail || !password) {
-      setAuthStatus('Bitte Benutzername und Passwort eingeben.', true);
+      setAuthStatus('Bitte einen Benutzernamen und ein Passwort anlegen.', true);
       return;
     }
     if (!email) {
