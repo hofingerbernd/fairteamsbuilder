@@ -80,7 +80,7 @@
     }
     const { usernameOrEmail, email, password } = readCredentials();
     if (!usernameOrEmail || !password) {
-      setAuthStatus('Bitte Benutzername und Passwort eingeben.', true);
+      setAuthStatus('Bitte einen Benutzernamen und ein Passwort anlegen.', true);
       return;
     }
     if (!email) {
