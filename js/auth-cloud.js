@@ -6,6 +6,41 @@
     user: null
   };
 
+  function normalizeUsername(input) {
+    return String(input || '')
+      .trim()
+      .toLowerCase()
+      .replace(/\s+/g, '')
+      .replace(/[^a-z0-9._-]/g, '');
+  }
+
+  function toSupabaseEmail(usernameOrEmail) {
+    const raw = String(usernameOrEmail || '').trim().toLowerCase();
+    if (!raw) return '';
+    if (raw.includes('@')) return raw;
+    const normalized = normalizeUsername(raw);
+    return normalized ? `${normalized}@fairteams.local` : '';
+  }
+
+  function readCredentials() {
+    const usernameOrEmail = String(document.getElementById('authEmail')?.value || '').trim();
+    const password = String(document.getElementById('authPassword')?.value || '');
+    const email = toSupabaseEmail(usernameOrEmail);
+    return { usernameOrEmail, email, password };
+  }
+
+  function displayNameFromUser(user) {
+    if (!user) return '';
+    const metaUsername =
+      user.user_metadata && typeof user.user_metadata.username === 'string'
+        ? user.user_metadata.username.trim()
+        : '';
+    if (metaUsername) return metaUsername;
+    const email = String(user.email || '').trim();
+    if (email.endsWith('@fairteams.local')) return email.replace('@fairteams.local', '');
+    return email || user.id;
+  }
+
   function setAuthStatus(message, isError) {
     const el = document.getElementById('authStatus');
     if (el) {
@@ -31,9 +66,7 @@
 
     const loggedIn = !!authState.user;
     if (userLabel) {
-      userLabel.textContent = loggedIn
-        ? `Angemeldet: ${authState.user.email || authState.user.id}`
-        : 'Nicht angemeldet.';
+      userLabel.textContent = loggedIn ? `Angemeldet: ${displayNameFromUser(authState.user)}` : 'Nicht angemeldet.';
     }
     if (signOutBtn) signOutBtn.disabled = !loggedIn;
     if (loadBtn) loadBtn.disabled = !loggedIn;
@@ -45,10 +78,13 @@
       setAuthStatus('Supabase nicht konfiguriert.', true);
       return;
     }
-    const email = String(document.getElementById('authEmail')?.value || '').trim();
-    const password = String(document.getElementById('authPassword')?.value || '');
-    if (!email || !password) {
-      setAuthStatus('Bitte E-Mail und Passwort eingeben.', true);
+    const { usernameOrEmail, email, password } = readCredentials();
+    if (!usernameOrEmail || !password) {
+      setAuthStatus('Bitte Benutzername und Passwort eingeben.', true);
+      return;
+    }
+    if (!email) {
+      setAuthStatus('Benutzername enthält ungültige Zeichen.', true);
       return;
     }
 
@@ -65,10 +101,13 @@
       setAuthStatus('Supabase nicht konfiguriert.', true);
       return;
     }
-    const email = String(document.getElementById('authEmail')?.value || '').trim();
-    const password = String(document.getElementById('authPassword')?.value || '');
-    if (!email || !password) {
-      setAuthStatus('Bitte E-Mail und Passwort eingeben.', true);
+    const { usernameOrEmail, email, password } = readCredentials();
+    if (!usernameOrEmail || !password) {
+      setAuthStatus('Bitte Benutzername und Passwort eingeben.', true);
+      return;
+    }
+    if (!email) {
+      setAuthStatus('Benutzername enthält ungültige Zeichen.', true);
       return;
     }
     if (password.length < 6) {
@@ -76,12 +115,29 @@
       return;
     }
 
-    const { error } = await authState.client.auth.signUp({ email, password });
+    const { data, error } = await authState.client.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          username: normalizeUsername(usernameOrEmail)
+        }
+      }
+    });
     if (error) {
       setAuthStatus(`Registrierung fehlgeschlagen: ${error.message}`, true);
       return;
     }
-    setAuthStatus('Registrierung gesendet. Prüfe ggf. deine E-Mails zur Bestätigung.', false);
+
+    if (data && data.session) {
+      setAuthStatus('Registrierung erfolgreich. Du bist jetzt angemeldet.', false);
+      return;
+    }
+
+    setAuthStatus(
+      'Registrierung erfolgreich. Bitte E-Mail-Bestätigung in Supabase deaktivieren oder Mail bestätigen.',
+      false
+    );
   }
 
   async function signOut() {
