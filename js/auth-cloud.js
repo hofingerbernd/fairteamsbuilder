@@ -287,17 +287,11 @@
     authState.user = data && data.session ? data.session.user : null;
     switchStorageScopeForUser(authState.user);
     renderAuthState();
-    if (authState.user) {
-      await loadCloudState();
-    }
 
     authState.client.auth.onAuthStateChange(async (_event, session) => {
       authState.user = session ? session.user : null;
       switchStorageScopeForUser(authState.user);
       renderAuthState();
-      if (authState.user) {
-        await loadCloudState();
-      }
     });
   }
 
