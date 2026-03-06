@@ -6,6 +6,7 @@
     client: null,
     user: null
   };
+  const SIGNED_OUT_SCOPE = 'signed_out';
 
   function normalizeUsername(input) {
     return String(input || '')
@@ -76,6 +77,21 @@
     const url = String(global.FAIRTEAMS_SUPABASE_URL || '').trim();
     const key = String(global.FAIRTEAMS_SUPABASE_ANON_KEY || '').trim();
     return { url, key };
+  }
+
+  function refreshAppViews() {
+    if (typeof global.renderMultiPoolList === 'function') global.renderMultiPoolList();
+    if (typeof global.renderSessionList === 'function') global.renderSessionList();
+    if (typeof global.newDistribution === 'function') global.newDistribution();
+    if (typeof global.renderCategories === 'function') global.renderCategories();
+    if (typeof global.renderOverview === 'function') global.renderOverview();
+  }
+
+  function switchStorageScopeForUser(user) {
+    if (typeof global.setStorageScope !== 'function') return;
+    const scope = user && user.id ? `user:${user.id}` : SIGNED_OUT_SCOPE;
+    global.setStorageScope(scope);
+    refreshAppViews();
   }
 
   function renderAuthState() {
@@ -228,19 +244,7 @@
         throw new Error('applyImportedState ist nicht verfügbar.');
       }
       global.applyImportedState(data.app_state);
-
-      if (typeof global.renderMultiPoolList === 'function') {
-        global.renderMultiPoolList();
-      }
-      if (typeof global.renderSessionList === 'function') {
-        global.renderSessionList();
-      }
-      if (typeof global.newDistribution === 'function') {
-        global.newDistribution();
-      }
-      if (typeof global.renderCategories === 'function') {
-        global.renderCategories();
-      }
+      refreshAppViews();
 
       setAuthStatus('Cloud-Stand geladen.', false);
     } catch (e) {
@@ -258,6 +262,7 @@
 
   async function bootstrap() {
     bindAuthEvents();
+    switchStorageScopeForUser(null);
 
     const { url, key } = readConfig();
     if (!url || !key || !global.supabase || typeof global.supabase.createClient !== 'function') {
@@ -280,11 +285,19 @@
     }
 
     authState.user = data && data.session ? data.session.user : null;
+    switchStorageScopeForUser(authState.user);
     renderAuthState();
+    if (authState.user) {
+      await loadCloudState();
+    }
 
-    authState.client.auth.onAuthStateChange((_event, session) => {
+    authState.client.auth.onAuthStateChange(async (_event, session) => {
       authState.user = session ? session.user : null;
+      switchStorageScopeForUser(authState.user);
       renderAuthState();
+      if (authState.user) {
+        await loadCloudState();
+      }
     });
   }
 
