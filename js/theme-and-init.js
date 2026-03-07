@@ -28,16 +28,16 @@ document.addEventListener('DOMContentLoaded', () => {
   renderSessionList();
 
   // Spieler laden
-  document.getElementById('prepareAssignmentBtn').addEventListener('click', prepareAssignment);
+  document.getElementById('prepareAssignmentBtn')?.addEventListener('click', prepareAssignment);
 
   // Teams generieren
-  document.getElementById('generateTeamsBtn').addEventListener('click', generateTeams);
+  document.getElementById('generateTeamsBtn')?.addEventListener('click', generateTeams);
 
   // Reset
-  document.getElementById('resetAssignmentsBtn').addEventListener('click', resetAssignments);
+  document.getElementById('resetAssignmentsBtn')?.addEventListener('click', resetAssignments);
 
   // Teamanzahl geändert
-  document.getElementById('teamCount').addEventListener('change', handleTeamCountChange);
+  document.getElementById('teamCount')?.addEventListener('change', handleTeamCountChange);
 
   // Verteilungsmodus umschalten
   document.querySelectorAll('input[name="distMode"]').forEach((rb) => {
@@ -45,18 +45,18 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // Turnier
-  document.getElementById('generateTournamentBtn').addEventListener('click', generateTournament);
+  document.getElementById('generateTournamentBtn')?.addEventListener('click', generateTournament);
 
   // Sessions
-  document.getElementById('saveSessionBtn').addEventListener('click', saveSessionUI);
+  document.getElementById('saveSessionBtn')?.addEventListener('click', saveSessionUI);
 
   // Teams kopieren
-  document.getElementById('exportTextBtn').addEventListener('click', exportTeamsAsText);
+  document.getElementById('exportTextBtn')?.addEventListener('click', exportTeamsAsText);
 
   // JSON (kompletter State)
-  document.getElementById('exportJSONBtn').addEventListener('click', exportJSON);
-  document.getElementById('importJSONBtn').addEventListener('click', importJSON);
+  document.getElementById('exportJSONBtn')?.addEventListener('click', exportJSON);
+  document.getElementById('importJSONBtn')?.addEventListener('click', importJSON);
 
   // Neue Verteilung
-  document.getElementById('newDistributionBtn').addEventListener('click', newDistribution);
+  document.getElementById('newDistributionBtn')?.addEventListener('click', newDistribution);
 });
