@@ -20,17 +20,6 @@ function setStatus(message, type = 'info', timeoutMs = 3500) {
   }
 }
 
-function toggleDark() {
-  document.body.classList.toggle('dark');
-  localStorage.setItem('mannschaften_darkmode', document.body.classList.contains('dark') ? '1' : '0');
-}
-
-function loadDark() {
-  if (localStorage.getItem('mannschaften_darkmode') === '1') {
-    document.body.classList.add('dark');
-  }
-}
-
 function renderOverview() {
   const categories = state.categories || [];
   let pools = 0;
@@ -355,8 +344,6 @@ function importJSON() {
 }
 
 function bindEvents() {
-  document.getElementById('darkModeToggle').addEventListener('click', toggleDark);
-
   document.getElementById('addCategoryBtn').addEventListener('click', () => {
     const input = document.getElementById('categoryInput');
     const name = input.value.trim();
@@ -415,7 +402,6 @@ function bindEvents() {
 
 document.addEventListener('DOMContentLoaded', () => {
   loadState();
-  loadDark();
   bindEvents();
   renderCategories();
 });

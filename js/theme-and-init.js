@@ -1,19 +1,6 @@
 /* ============================================================
-   DARK MODE & NEUE VERTEILUNG
+   NEUE VERTEILUNG
    ============================================================*/
-function toggleDark() {
-  document.body.classList.toggle('dark');
-  localStorage.setItem(
-    'mannschaften_darkmode',
-    document.body.classList.contains('dark') ? '1' : '0'
-  );
-}
-function loadDark() {
-  if (localStorage.getItem('mannschaften_darkmode') === '1') {
-    document.body.classList.add('dark');
-  }
-}
-
 function newDistribution() {
   uiState.currentGenerationPlayers = [];
   uiState.lastTeams = null;
@@ -36,7 +23,6 @@ function newDistribution() {
    ============================================================*/
 document.addEventListener('DOMContentLoaded', () => {
   loadState();
-  loadDark();
 
   renderMultiPoolList();
   renderSessionList();
@@ -70,9 +56,6 @@ document.addEventListener('DOMContentLoaded', () => {
   // JSON (kompletter State)
   document.getElementById('exportJSONBtn').addEventListener('click', exportJSON);
   document.getElementById('importJSONBtn').addEventListener('click', importJSON);
-
-  // Dark
-  document.getElementById('darkModeToggle').addEventListener('click', toggleDark);
 
   // Neue Verteilung
   document.getElementById('newDistributionBtn').addEventListener('click', newDistribution);
