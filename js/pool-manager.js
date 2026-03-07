@@ -31,9 +31,21 @@ function getStorageKey() {
   return `${STORAGE_KEY_BASE}__${storageScope}`;
 }
 
+function isPersistentScope() {
+  return storageScope !== 'signed_out';
+}
+
 function setStorageScope(scope) {
   const nextScope = String(scope || '').trim();
   storageScope = nextScope || 'signed_out';
+  if (!isPersistentScope()) {
+    // Gastdaten werden nicht dauerhaft gespeichert.
+    try {
+      localStorage.removeItem(getStorageKey());
+    } catch (e) {
+      console.warn('Konnte Gast-Speicher nicht löschen:', e);
+    }
+  }
   loadState();
 }
 
@@ -41,6 +53,11 @@ function setStorageScope(scope) {
    STATE & STORAGE
    ============================================================*/
 function loadState() {
+  if (!isPersistentScope()) {
+    state = createEmptyState();
+    return;
+  }
+
   try {
     const raw = localStorage.getItem(getStorageKey());
     if (raw) {
@@ -49,28 +66,6 @@ function loadState() {
       saveState();
     } else {
       state = createEmptyState();
-
-      if (storageScope === 'signed_out') {
-        // Versuche alte Struktur zu migrieren (pools -> default category)
-        const oldKey = 'mannschaften_premium_state_v2_modeAB';
-        const oldRaw = localStorage.getItem(oldKey);
-        if (oldRaw) {
-          const oldState = JSON.parse(oldRaw);
-          if (oldState.pools && oldState.pools.length > 0) {
-            const defaultCategory = {
-              id: state.nextCategoryId++,
-              name: 'Ungeteilt',
-              pools: oldState.pools
-            };
-            state.categories.push(defaultCategory);
-            state.nextPoolId = oldState.nextPoolId || 1;
-            state.nextPlayerId = oldState.nextPlayerId || 1;
-            state.sessions = oldState.sessions || [];
-            state.nextSessionId = oldState.nextSessionId || 1;
-            saveState();
-          }
-        }
-      }
     }
   } catch (e) {
     console.warn('Konnte Zustand nicht laden:', e);
@@ -78,6 +73,13 @@ function loadState() {
 }
 
 function saveState() {
+  if (!isPersistentScope()) {
+    if (typeof window !== 'undefined' && typeof window.dispatchEvent === 'function') {
+      window.dispatchEvent(new CustomEvent('fairteams:state-saved'));
+    }
+    return;
+  }
+
   try {
     localStorage.setItem(getStorageKey(), JSON.stringify(state));
     if (typeof window !== 'undefined' && typeof window.dispatchEvent === 'function') {
