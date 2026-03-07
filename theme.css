@@ -89,13 +89,13 @@ button.ghost:hover {
 }
 
 button.danger {
-  background: #fee2e2;
-  color: var(--danger);
-  border: 1px solid #fecaca;
+  background: #fce7f3;
+  color: #ec4899;
+  border: 1px solid #f9a8d4;
 }
 
 button.danger:hover {
-  background: #fecaca;
+  background: #fbcfe8;
 }
 
 button.small {
