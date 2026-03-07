@@ -7,34 +7,14 @@
     <meta name="theme-color" content="#16a34a" />
     <link rel="stylesheet" href="./theme.css" />
     <style>
-      .page-top-line {
-        background: #ffffff;
-        border-bottom: 1px solid var(--border);
-        padding: 0.7rem 1.5rem;
-        font-size: 1.15rem;
-        font-weight: 700;
-        letter-spacing: -0.2px;
-      }
-
       header {
         background: #ffffff !important;
         color: #111827 !important;
         border-bottom: 1px solid var(--border);
-        padding: 0.9rem 1.5rem;
+        padding: 20px 20px;
         display: flex;
-        flex-direction: column;
-        align-items: stretch;
-        flex-wrap: wrap;
-        gap: 0.6rem;
-      }
-
-      header h1 {
-        font-size: 1.15rem;
-        letter-spacing: -0.5px;
-        display: flex;
-        align-items: center;
-        gap: 0.45rem;
-        margin: 0;
+        justify-content: flex-end;
+        align-items: flex-start;
       }
 
       .header-right {
@@ -261,9 +241,7 @@
   </head>
 
   <body>
-    <div class="page-top-line">Fairteamsbuilder - Pools verwalten</div>
     <header>
-      <h1><span class="logo-dot"></span> Fairteamsbuilder - Pools verwalten</h1>
       <div class="header-right">
         <div class="header-tools">
           <a href="./index.html" style="text-decoration: none"><button class="primary">Zum Builder</button></a>
