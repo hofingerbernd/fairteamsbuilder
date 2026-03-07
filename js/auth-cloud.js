@@ -508,31 +508,35 @@
     }
 
     authState.user = data && data.session ? data.session.user : null;
-    switchStorageScopeForUser(authState.user);
-    renderAuthState();
     if (authState.user) {
       try {
         isHydratingCloudState = true;
+        switchStorageScopeForUser(authState.user);
+        renderAuthState();
         await syncCloudStateWithRetry(true);
       } finally {
         isHydratingCloudState = false;
       }
     } else {
+      switchStorageScopeForUser(null);
+      renderAuthState();
       setSyncStatus('Nicht verbunden', 'info');
     }
 
     authState.client.auth.onAuthStateChange(async (_event, session) => {
       authState.user = session ? session.user : null;
-      switchStorageScopeForUser(authState.user);
-      renderAuthState();
       if (authState.user) {
         try {
           isHydratingCloudState = true;
+          switchStorageScopeForUser(authState.user);
+          renderAuthState();
           await syncCloudStateWithRetry(true);
         } finally {
           isHydratingCloudState = false;
         }
       } else {
+        switchStorageScopeForUser(null);
+        renderAuthState();
         setSyncStatus('Nicht verbunden', 'info');
       }
     });

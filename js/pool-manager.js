@@ -46,12 +46,12 @@ function loadState() {
     if (raw) {
       const parsed = JSON.parse(raw);
       state = normalizeImportedState(parsed);
-      saveState();
     } else {
       state = createEmptyState();
     }
   } catch (e) {
     console.warn('Konnte Zustand nicht laden:', e);
+    state = createEmptyState();
   }
 }
 
