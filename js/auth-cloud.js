@@ -118,6 +118,15 @@
     return 'Unbekannter Fehler.';
   }
 
+  function getCountsFromStateLike(stateLike) {
+    const categories = Array.isArray(stateLike && stateLike.categories) ? stateLike.categories : [];
+    let pools = 0;
+    categories.forEach((cat) => {
+      if (Array.isArray(cat && cat.pools)) pools += cat.pools.length;
+    });
+    return { categories: categories.length, pools };
+  }
+
   function readConfig() {
     const url = String(global.FAIRTEAMS_SUPABASE_URL || '').trim();
     const key = String(global.FAIRTEAMS_SUPABASE_ANON_KEY || '').trim();
@@ -412,13 +421,24 @@
     }
 
     try {
+      const cloudCounts = getCountsFromStateLike(data.app_state);
       if (typeof global.applyImportedState !== 'function') {
         throw new Error('applyImportedState ist nicht verfügbar.');
       }
       isApplyingRemoteState = true;
       global.applyImportedState(data.app_state);
       refreshAppViews();
-      setSyncStatus(`Synchronisiert um ${formatTime(Date.now())}`, 'success');
+      const appliedState =
+        typeof global.getState === 'function'
+          ? global.getState()
+          : global.state && typeof global.state === 'object'
+            ? global.state
+            : null;
+      const appliedCounts = getCountsFromStateLike(appliedState);
+      setSyncStatus(
+        `Synchronisiert ${cloudCounts.categories}K/${cloudCounts.pools}P -> ${appliedCounts.categories}K/${appliedCounts.pools}P um ${formatTime(Date.now())}`,
+        'success'
+      );
       if (!silent) setAuthStatus('Cloud-Stand geladen.', false);
       if (source === 'email' && authState.user && authState.user.id) {
         await authState.client.from(TABLE).upsert(
