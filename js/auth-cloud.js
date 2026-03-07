@@ -9,6 +9,8 @@
   const SIGNED_OUT_SCOPE = 'signed_out';
   let autoSaveTimer = null;
   let isApplyingRemoteState = false;
+  let isSaving = false;
+  let pendingSave = false;
 
   function normalizeUsername(input) {
     return String(input || '')
@@ -58,11 +60,34 @@
     }
   }
 
+  function setSyncStatus(message, type = 'info') {
+    const el = document.getElementById('syncStatus');
+    if (!el) return;
+    el.textContent = message || '';
+    el.style.color =
+      type === 'error'
+        ? 'var(--danger)'
+        : type === 'success'
+          ? 'var(--success)'
+          : 'var(--text-muted)';
+  }
+
+  function formatTime(ts) {
+    try {
+      return new Date(ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    } catch {
+      return '';
+    }
+  }
+
   function mapAuthErrorMessage(error) {
     const raw = String((error && error.message) || '').trim();
     const lower = raw.toLowerCase();
 
     if (!raw) return 'Unbekannter Fehler.';
+    if (lower.includes('failed to fetch') || lower.includes('network')) {
+      return 'Netzwerkfehler. Bitte Internetverbindung prüfen.';
+    }
     if (lower.includes('email rate limit exceeded')) {
       return 'Zu viele Registrierungsversuche. Bitte kurz warten und erneut versuchen.';
     }
@@ -115,8 +140,14 @@
     if (signInBtn) signInBtn.disabled = loggedIn;
     if (signUpBtn) signUpBtn.disabled = loggedIn;
     if (signOutBtn) signOutBtn.disabled = !loggedIn;
-    if (loadBtn) loadBtn.disabled = !loggedIn;
-    if (saveBtn) saveBtn.disabled = !loggedIn;
+    if (loadBtn) loadBtn.disabled = !loggedIn; // Legacy fallback (if old UI is cached)
+    if (saveBtn) saveBtn.disabled = !loggedIn; // Legacy fallback (if old UI is cached)
+
+    if (!loggedIn) {
+      setSyncStatus('Nicht verbunden', 'info');
+    } else if (!navigator.onLine) {
+      setSyncStatus('Offline - warte auf Verbindung', 'error');
+    }
   }
 
   async function signIn() {
@@ -142,6 +173,7 @@
     const passwordInput = document.getElementById('authPassword');
     if (passwordInput) passwordInput.value = '';
     setAuthStatus('Anmeldung erfolgreich.', false);
+    setSyncStatus('Verbunden', 'success');
   }
 
   async function signUp() {
@@ -198,12 +230,22 @@
     const passwordInput = document.getElementById('authPassword');
     if (passwordInput) passwordInput.value = '';
     setAuthStatus('Abgemeldet.', false);
+    setSyncStatus('Nicht verbunden', 'info');
   }
 
   async function saveCloudState(options = {}) {
     const silent = !!options.silent;
     if (!authState.client || !authState.user) {
       if (!silent) setAuthStatus('Bitte zuerst anmelden.', true);
+      return;
+    }
+    if (!navigator.onLine) {
+      pendingSave = true;
+      setSyncStatus('Offline - Änderungen werden später synchronisiert', 'error');
+      return;
+    }
+    if (isSaving) {
+      pendingSave = true;
       return;
     }
 
@@ -225,12 +267,24 @@
       updated_at: new Date().toISOString()
     };
 
+    isSaving = true;
+    setSyncStatus('Synchronisiere ...', 'info');
     const { error } = await authState.client.from(TABLE).upsert(payload, { onConflict: 'user_id' });
+    isSaving = false;
     if (error) {
+      pendingSave = true;
+      setSyncStatus('Synchronisierung fehlgeschlagen', 'error');
       if (!silent) setAuthStatus(`Cloud speichern fehlgeschlagen: ${mapAuthErrorMessage(error)}`, true);
       return;
     }
+    pendingSave = false;
+    setSyncStatus(`Synchronisiert um ${formatTime(Date.now())}`, 'success');
     if (!silent) setAuthStatus('Cloud speichern erfolgreich.', false);
+
+    if (pendingSave) {
+      pendingSave = false;
+      saveCloudState({ silent: true });
+    }
   }
 
   async function loadCloudState(options = {}) {
@@ -248,10 +302,12 @@
 
     if (error) {
       if (!silent) setAuthStatus(`Cloud laden fehlgeschlagen: ${mapAuthErrorMessage(error)}`, true);
+      setSyncStatus('Cloud-Stand konnte nicht geladen werden', 'error');
       return;
     }
     if (!data || !data.app_state) {
       if (!silent) setAuthStatus('Kein Cloud-Stand vorhanden.', false);
+      setSyncStatus('Keine Cloud-Daten vorhanden', 'info');
       return;
     }
 
@@ -262,9 +318,11 @@
       isApplyingRemoteState = true;
       global.applyImportedState(data.app_state);
       refreshAppViews();
+      setSyncStatus(`Synchronisiert um ${formatTime(Date.now())}`, 'success');
       if (!silent) setAuthStatus('Cloud-Stand geladen.', false);
     } catch (e) {
       if (!silent) setAuthStatus(`Cloud-Daten ungültig: ${e.message}`, true);
+      setSyncStatus('Cloud-Daten ungültig', 'error');
     } finally {
       isApplyingRemoteState = false;
     }
@@ -286,6 +344,15 @@
     document.getElementById('cloudLoadBtn')?.addEventListener('click', loadCloudState);
     if (typeof window !== 'undefined' && typeof window.addEventListener === 'function') {
       window.addEventListener('fairteams:state-saved', scheduleAutoSave);
+      window.addEventListener('online', () => {
+        setSyncStatus('Online - synchronisiere ...', 'info');
+        if (pendingSave || authState.user) {
+          saveCloudState({ silent: true });
+        }
+      });
+      window.addEventListener('offline', () => {
+        setSyncStatus('Offline - warte auf Verbindung', 'error');
+      });
     }
   }
 
@@ -318,6 +385,8 @@
     renderAuthState();
     if (authState.user) {
       await loadCloudState({ silent: true });
+    } else {
+      setSyncStatus('Nicht verbunden', 'info');
     }
 
     authState.client.auth.onAuthStateChange(async (_event, session) => {
@@ -326,6 +395,8 @@
       renderAuthState();
       if (authState.user) {
         await loadCloudState({ silent: true });
+      } else {
+        setSyncStatus('Nicht verbunden', 'info');
       }
     });
   }
