@@ -207,9 +207,21 @@
       return;
     }
 
+    const currentState =
+      typeof global.getState === 'function'
+        ? global.getState()
+        : global.state && typeof global.state === 'object'
+          ? global.state
+          : null;
+
+    if (!currentState) {
+      if (!silent) setAuthStatus('Lokaler Zustand konnte nicht gelesen werden.', true);
+      return;
+    }
+
     const payload = {
       user_id: authState.user.id,
-      app_state: global.state,
+      app_state: currentState,
       updated_at: new Date().toISOString()
     };
 
