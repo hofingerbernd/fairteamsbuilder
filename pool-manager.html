@@ -13,8 +13,8 @@
         border-bottom: 1px solid var(--border);
         padding: 20px 20px;
         display: flex;
-        justify-content: flex-end;
-        align-items: flex-start;
+        justify-content: space-between;
+        align-items: flex-end;
       }
 
       .header-right {
@@ -24,13 +24,35 @@
         gap: 0.5rem;
         width: auto;
         align-self: flex-end;
-        margin-right: 20px;
       }
 
-      .header-tools {
+      .header-tabs {
         display: flex;
+        gap: 0.35rem;
+      }
+
+      .header-tab {
+        display: inline-flex;
         align-items: center;
-        gap: 0.5rem;
+        text-decoration: none;
+        padding: 0.38rem 0.75rem;
+        border: 1px solid #7dd3fc;
+        background: #e0f2fe;
+        color: #000000;
+        border-top-left-radius: 0.65rem;
+        border-top-right-radius: 0.65rem;
+        border-bottom-left-radius: 0.2rem;
+        border-bottom-right-radius: 0.2rem;
+        font-size: 0.78rem;
+        font-weight: 600;
+      }
+
+      .header-tab.active {
+        background: #bae6fd;
+      }
+
+      .header-tab:hover {
+        background: #7dd3fc;
       }
 
       .header-auth {
@@ -74,10 +96,17 @@
       }
 
       @media (max-width: 960px) {
+        header {
+          flex-direction: column;
+          align-items: stretch;
+          gap: 0.5rem;
+        }
+
         .header-right {
           margin-right: 0;
           width: 100%;
           align-items: stretch;
+          order: 1;
         }
 
         .header-auth {
@@ -86,6 +115,10 @@
 
         .header-auth-fields {
           grid-template-columns: 1fr;
+        }
+
+        .header-tabs {
+          order: 2;
         }
       }
 
@@ -242,10 +275,11 @@
 
   <body>
     <header>
+      <nav class="header-tabs" aria-label="Bereich wechseln">
+        <a class="header-tab" href="./index.html">Builder</a>
+        <a class="header-tab active" href="./pool-manager.html">Verwaltung</a>
+      </nav>
       <div class="header-right">
-        <div class="header-tools">
-          <a href="./index.html" style="text-decoration: none"><button class="primary">Zum Builder</button></a>
-        </div>
         <div class="header-auth">
           <div class="header-auth-fields">
             <div>
