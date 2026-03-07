@@ -123,6 +123,7 @@
 
   function renderAuthState() {
     const userLabel = document.getElementById('authUserLabel');
+    const tabLabel = document.getElementById('authTabLabel');
     const emailInput = document.getElementById('authEmail');
     const passwordInput = document.getElementById('authPassword');
     const signInBtn = document.getElementById('signInBtn');
@@ -132,8 +133,12 @@
     const saveBtn = document.getElementById('cloudSaveBtn');
 
     const loggedIn = !!authState.user;
+    const displayName = loggedIn ? displayNameFromUser(authState.user) : '';
     if (userLabel) {
-      userLabel.textContent = loggedIn ? `Angemeldet: ${displayNameFromUser(authState.user)}` : 'Nicht angemeldet.';
+      userLabel.textContent = loggedIn ? `Angemeldet: ${displayName}` : 'Nicht angemeldet.';
+    }
+    if (tabLabel) {
+      tabLabel.textContent = loggedIn ? `Angemeldet: ${displayName}` : 'Anmeldung';
     }
     if (emailInput) emailInput.disabled = loggedIn;
     if (passwordInput) passwordInput.disabled = loggedIn;
