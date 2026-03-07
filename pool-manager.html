@@ -147,6 +147,17 @@
         flex-wrap: wrap;
       }
 
+      textarea {
+        width: 100%;
+        border: 1px solid var(--border);
+        border-radius: 0.45rem;
+        padding: 0.5rem 0.6rem;
+        font-family: inherit;
+        font-size: 0.95rem;
+        resize: vertical;
+        min-height: 120px;
+      }
+
       .pool-list {
         list-style: none;
         padding: 0;
@@ -347,9 +358,13 @@
         <p class="muted" id="playerHint">Wähle zuerst einen Pool.</p>
 
         <div class="row">
-          <div style="flex: 1; min-width: 180px">
-            <label for="playerInput">Neuer Spieler</label>
-            <input id="playerInput" type="text" placeholder="Name" disabled />
+          <div style="flex: 1; min-width: 220px">
+            <label for="playerBulkInput">Spielernamen (eine Zeile pro Name)</label>
+            <textarea
+              id="playerBulkInput"
+              placeholder="Max Mustermann&#10;Anna Beispiel&#10;..."
+              disabled
+            ></textarea>
           </div>
 
           <div style="width: 110px">
@@ -362,14 +377,23 @@
             </select>
           </div>
 
-          <button id="addPlayerBtn" class="primary" disabled>+ Spieler</button>
+          <button id="addPlayersBtn" class="primary" disabled>Namen übernehmen</button>
         </div>
 
         <ul id="playerList" class="pool-list"></ul>
       </section>
 
       <section class="card">
-        <h2>📊 Übersicht & Cloud</h2>
+        <h2>
+          <span class="section-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <path
+                d="M7 18a4 4 0 1 1 .2-8A6 6 0 0 1 18.8 8a4.2 4.2 0 0 1 .2 8H7zm4.5-7h1v2h2v1h-2v2h-1v-2h-2v-1h2v-2z"
+              />
+            </svg>
+          </span>
+          <span class="section-title-pink">Übersicht & Cloud</span>
+        </h2>
         <div class="overview-grid">
           <div class="stat">
             <div class="stat-label">Kategorien</div>
@@ -383,11 +407,6 @@
             <div class="stat-label">Spieler</div>
             <div class="stat-value" id="statPlayers">0</div>
           </div>
-        </div>
-
-        <div style="margin-top: 1rem">
-          <button id="exportJSONBtn" class="ghost small">JSON Export</button>
-          <button id="importJSONBtn" class="ghost small">JSON Import</button>
         </div>
       </section>
     </main>
