@@ -9,6 +9,7 @@
   const SIGNED_OUT_SCOPE = 'signed_out';
   let autoSaveTimer = null;
   let isApplyingRemoteState = false;
+  let isHydratingCloudState = false;
   let isSaving = false;
   let pendingSave = false;
 
@@ -181,6 +182,7 @@
 
     let syncResult = null;
     try {
+      isHydratingCloudState = true;
       const { data: userData } = await authState.client.auth.getUser();
       authState.user = userData && userData.user ? userData.user : authState.user;
       switchStorageScopeForUser(authState.user);
@@ -188,6 +190,8 @@
       syncResult = await syncCloudStateWithRetry(false);
     } catch {
       // Fallback auf onAuthStateChange
+    } finally {
+      isHydratingCloudState = false;
     }
 
     const passwordInput = document.getElementById('authPassword');
@@ -368,7 +372,9 @@
 
     if (error) {
       if (!silent) setAuthStatus(`Cloud laden fehlgeschlagen: ${mapAuthErrorMessage(error)}`, true);
-      setSyncStatus('Cloud-Stand konnte nicht geladen werden', 'error');
+      const readable = mapAuthErrorMessage(error);
+      setSyncStatus(`Cloud-Stand konnte nicht geladen werden (${readable})`, 'error');
+      console.error('[fairteams] cloud load failed', error);
       return { ok: false, loaded: false, reason: 'query_error', error };
     }
     if (!data || !data.app_state) {
@@ -408,7 +414,7 @@
   }
 
   function scheduleAutoSave() {
-    if (!authState.client || !authState.user || isApplyingRemoteState) return;
+    if (!authState.client || !authState.user || isApplyingRemoteState || isHydratingCloudState) return;
     if (autoSaveTimer) clearTimeout(autoSaveTimer);
     autoSaveTimer = setTimeout(() => {
       saveCloudState({ silent: true });
@@ -443,7 +449,7 @@
       window.addEventListener('fairteams:state-saved', scheduleAutoSave);
       window.addEventListener('online', () => {
         setSyncStatus('Online - synchronisiere ...', 'info');
-        if (pendingSave || authState.user) {
+        if (!isHydratingCloudState && (pendingSave || authState.user)) {
           saveCloudState({ silent: true });
         }
       });
@@ -481,7 +487,12 @@
     switchStorageScopeForUser(authState.user);
     renderAuthState();
     if (authState.user) {
-      await syncCloudStateWithRetry(true);
+      try {
+        isHydratingCloudState = true;
+        await syncCloudStateWithRetry(true);
+      } finally {
+        isHydratingCloudState = false;
+      }
     } else {
       setSyncStatus('Nicht verbunden', 'info');
     }
@@ -491,7 +502,12 @@
       switchStorageScopeForUser(authState.user);
       renderAuthState();
       if (authState.user) {
-        await syncCloudStateWithRetry(true);
+        try {
+          isHydratingCloudState = true;
+          await syncCloudStateWithRetry(true);
+        } finally {
+          isHydratingCloudState = false;
+        }
       } else {
         setSyncStatus('Nicht verbunden', 'info');
       }
