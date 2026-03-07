@@ -31,21 +31,9 @@ function getStorageKey() {
   return `${STORAGE_KEY_BASE}__${storageScope}`;
 }
 
-function isPersistentScope() {
-  return storageScope !== 'signed_out';
-}
-
 function setStorageScope(scope) {
   const nextScope = String(scope || '').trim();
   storageScope = nextScope || 'signed_out';
-  if (!isPersistentScope()) {
-    // Gastdaten werden nicht dauerhaft gespeichert.
-    try {
-      localStorage.removeItem(getStorageKey());
-    } catch (e) {
-      console.warn('Konnte Gast-Speicher nicht löschen:', e);
-    }
-  }
   loadState();
 }
 
@@ -53,11 +41,6 @@ function setStorageScope(scope) {
    STATE & STORAGE
    ============================================================*/
 function loadState() {
-  if (!isPersistentScope()) {
-    state = createEmptyState();
-    return;
-  }
-
   try {
     const raw = localStorage.getItem(getStorageKey());
     if (raw) {
@@ -73,13 +56,6 @@ function loadState() {
 }
 
 function saveState() {
-  if (!isPersistentScope()) {
-    if (typeof window !== 'undefined' && typeof window.dispatchEvent === 'function') {
-      window.dispatchEvent(new CustomEvent('fairteams:state-saved'));
-    }
-    return;
-  }
-
   try {
     localStorage.setItem(getStorageKey(), JSON.stringify(state));
     if (typeof window !== 'undefined' && typeof window.dispatchEvent === 'function') {
