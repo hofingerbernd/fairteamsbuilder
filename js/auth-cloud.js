@@ -118,6 +118,23 @@
     return 'Unbekannter Fehler.';
   }
 
+  function renderAuthTabLabel(tabLabel, loggedIn) {
+    if (!tabLabel) return;
+    if (loggedIn) {
+      tabLabel.innerHTML =
+        '<span style="display:inline-flex;align-items:center;gap:0.3rem;color:#15803d;font-weight:700;">' +
+        '<svg viewBox="0 0 24 24" aria-hidden="true" style="width:0.95rem;height:0.95rem;fill:currentColor;">' +
+        '<path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm-4 8a1.2 1.2 0 1 1 0-2.4A1.2 1.2 0 0 1 8 10zm8 0a1.2 1.2 0 1 1 0-2.4A1.2 1.2 0 0 1 16 10zm-8.4 3.5a.9.9 0 0 1 1.3 0c.8.8 1.9 1.2 3.1 1.2s2.3-.4 3.1-1.2a.9.9 0 0 1 1.3 1.3A6.15 6.15 0 0 1 12 16.5a6.15 6.15 0 0 1-4.4-1.7.9.9 0 0 1 0-1.3z"/>' +
+        '</svg>Angemeldet</span>';
+      return;
+    }
+    tabLabel.innerHTML =
+      '<span style="display:inline-flex;align-items:center;gap:0.3rem;color:#dc2626;font-weight:700;">' +
+      '<svg viewBox="0 0 24 24" aria-hidden="true" style="width:0.95rem;height:0.95rem;fill:currentColor;">' +
+      '<path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm-4 8a1.2 1.2 0 1 1 0-2.4A1.2 1.2 0 0 1 8 10zm8 0a1.2 1.2 0 1 1 0-2.4A1.2 1.2 0 0 1 16 10zm.4 6a.9.9 0 0 1-1.3 0c-.8-.8-1.9-1.2-3.1-1.2s-2.3.4-3.1 1.2A.9.9 0 1 1 7.6 14.7 6.15 6.15 0 0 1 12 13c1.7 0 3.2.6 4.4 1.7a.9.9 0 0 1 0 1.3z"/>' +
+      '</svg>Bitte anmelden</span>';
+  }
+
   function getCountsFromStateLike(stateLike) {
     const categories = Array.isArray(stateLike && stateLike.categories) ? stateLike.categories : [];
     let pools = 0;
@@ -164,9 +181,7 @@
     if (userLabel) {
       userLabel.textContent = loggedIn ? `Angemeldet: ${displayName}` : 'Nicht angemeldet.';
     }
-    if (tabLabel) {
-      tabLabel.textContent = loggedIn ? 'Angemeldet' : 'Bitte anmelden';
-    }
+    renderAuthTabLabel(tabLabel, loggedIn);
     if (emailInput) emailInput.disabled = loggedIn;
     if (passwordInput) passwordInput.disabled = loggedIn;
     if (signInBtn) signInBtn.disabled = loggedIn;
