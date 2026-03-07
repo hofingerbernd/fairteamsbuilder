@@ -14,16 +14,37 @@
         padding: 0.9rem 1.5rem;
         display: flex;
         justify-content: space-between;
-        align-items: center;
+        align-items: flex-end;
         flex-wrap: wrap;
       }
 
-      header h1 {
-        font-size: 1.15rem;
-        letter-spacing: -0.5px;
+      .header-tabs {
         display: flex;
+        gap: 0.35rem;
+      }
+
+      .header-tab {
+        display: inline-flex;
         align-items: center;
-        gap: 0.45rem;
+        text-decoration: none;
+        padding: 0.38rem 0.75rem;
+        border: 1px solid #7dd3fc;
+        background: #e0f2fe;
+        color: #000000;
+        border-top-left-radius: 0.65rem;
+        border-top-right-radius: 0.65rem;
+        border-bottom-left-radius: 0.2rem;
+        border-bottom-right-radius: 0.2rem;
+        font-size: 0.78rem;
+        font-weight: 600;
+      }
+
+      .header-tab.active {
+        background: #bae6fd;
+      }
+
+      .header-tab:hover {
+        background: #7dd3fc;
       }
 
       .header-right {
@@ -78,13 +99,16 @@
 
       @media (max-width: 960px) {
         header {
-          align-items: flex-start;
+          flex-direction: column;
+          align-items: stretch;
+          gap: 0.5rem;
         }
 
         .header-right {
           margin-right: 0;
           width: 100%;
           align-items: stretch;
+          order: 1;
         }
 
         .header-auth {
@@ -93,6 +117,10 @@
 
         .header-auth-fields {
           grid-template-columns: 1fr;
+        }
+
+        .header-tabs {
+          order: 2;
         }
       }
 
@@ -281,6 +309,10 @@
 
   <body>
     <header>
+      <nav class="header-tabs" aria-label="Bereich wechseln">
+        <a class="header-tab active" href="./index.html">Builder</a>
+        <a class="header-tab" href="./pool-manager.html">Verwaltung</a>
+      </nav>
       <div class="header-right">
         <div class="header-auth">
           <div class="header-auth-fields">
@@ -303,7 +335,6 @@
           <div id="syncStatus" class="header-auth-status">Nicht verbunden</div>
         </div>
       </div>
-      <h1><span class="logo-dot"></span> Fairteamsbuilder - faire Mannschaften ohne Wählen</h1>
     </header>
 
     <div class="app">
