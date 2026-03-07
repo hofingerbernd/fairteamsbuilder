@@ -342,6 +342,13 @@
     }
   }
 
+  let emailColumnAvailable = true;
+
+  function isMissingEmailColumnError(error) {
+    const raw = String((error && error.message) || '').toLowerCase();
+    return raw.includes('fairteams_user_states.email') && raw.includes('does not exist');
+  }
+
   async function fetchCloudStateRecord() {
     if (!authState.client || !authState.user) {
       return { data: null, error: null, source: null };
@@ -349,7 +356,7 @@
 
     const byUserId = await authState.client
       .from(TABLE)
-      .select('user_id, email, app_state')
+      .select('user_id, app_state')
       .eq('user_id', authState.user.id)
       .maybeSingle();
     if (byUserId.error) {
@@ -359,16 +366,20 @@
       return { data: byUserId.data, error: null, source: 'user_id' };
     }
 
-    if (!authState.user.email) {
+    if (!emailColumnAvailable || !authState.user.email) {
       return { data: byUserId.data || null, error: null, source: 'user_id' };
     }
 
     const byEmail = await authState.client
       .from(TABLE)
-      .select('user_id, email, app_state')
+      .select('user_id, app_state')
       .eq('email', authState.user.email)
       .maybeSingle();
     if (byEmail.error) {
+      if (isMissingEmailColumnError(byEmail.error)) {
+        emailColumnAvailable = false;
+        return { data: byUserId.data || null, error: null, source: 'user_id' };
+      }
       return { data: byUserId.data || null, error: null, source: 'user_id' };
     }
     if (byEmail.data && byEmail.data.app_state) {
@@ -413,7 +424,6 @@
         await authState.client.from(TABLE).upsert(
           {
             user_id: authState.user.id,
-            email: authState.user.email || null,
             app_state: data.app_state,
             updated_at: new Date().toISOString()
           },
