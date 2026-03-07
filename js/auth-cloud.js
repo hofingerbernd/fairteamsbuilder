@@ -97,6 +97,9 @@
     if (lower.includes('user already registered')) {
       return 'Benutzername ist bereits registriert. Bitte anmelden.';
     }
+    if (lower.includes('permission denied') || lower.includes('row-level security')) {
+      return 'Zugriff verweigert (RLS). Bitte Supabase-Policies prüfen.';
+    }
     return raw;
   }
 
@@ -176,18 +179,33 @@
       return;
     }
 
+    let syncResult = null;
     try {
       const { data: userData } = await authState.client.auth.getUser();
       authState.user = userData && userData.user ? userData.user : authState.user;
       switchStorageScopeForUser(authState.user);
       renderAuthState();
-      await syncCloudStateWithRetry(false);
+      syncResult = await syncCloudStateWithRetry(false);
     } catch {
       // Fallback auf onAuthStateChange
     }
 
     const passwordInput = document.getElementById('authPassword');
     if (passwordInput) passwordInput.value = '';
+    if (syncResult && syncResult.ok && syncResult.loaded) {
+      setAuthStatus('Anmeldung erfolgreich. Cloud-Stand geladen.', false);
+      setSyncStatus('Verbunden', 'success');
+      return;
+    }
+    if (syncResult && syncResult.ok && syncResult.reason === 'empty') {
+      setAuthStatus('Anmeldung erfolgreich. Noch kein Cloud-Stand vorhanden.', false);
+      setSyncStatus('Verbunden', 'success');
+      return;
+    }
+    if (syncResult && !syncResult.ok) {
+      setAuthStatus('Anmeldung erfolgreich, aber Cloud-Stand konnte nicht geladen werden.', true);
+      return;
+    }
     setAuthStatus('Anmeldung erfolgreich.', false);
     setSyncStatus('Verbunden', 'success');
   }
@@ -303,28 +321,60 @@
     }
   }
 
+  async function fetchCloudStateRecord() {
+    if (!authState.client || !authState.user) {
+      return { data: null, error: null, source: null };
+    }
+
+    const byUserId = await authState.client
+      .from(TABLE)
+      .select('user_id, email, app_state')
+      .eq('user_id', authState.user.id)
+      .maybeSingle();
+    if (byUserId.error) {
+      return { data: null, error: byUserId.error, source: 'user_id' };
+    }
+    if (byUserId.data && byUserId.data.app_state) {
+      return { data: byUserId.data, error: null, source: 'user_id' };
+    }
+
+    if (!authState.user.email) {
+      return { data: byUserId.data || null, error: null, source: 'user_id' };
+    }
+
+    const byEmail = await authState.client
+      .from(TABLE)
+      .select('user_id, email, app_state')
+      .eq('email', authState.user.email)
+      .maybeSingle();
+    if (byEmail.error) {
+      return { data: byUserId.data || null, error: null, source: 'user_id' };
+    }
+    if (byEmail.data && byEmail.data.app_state) {
+      return { data: byEmail.data, error: null, source: 'email' };
+    }
+
+    return { data: byUserId.data || byEmail.data || null, error: null, source: null };
+  }
+
   async function loadCloudState(options = {}) {
     const silent = !!options.silent;
     if (!authState.client || !authState.user) {
       if (!silent) setAuthStatus('Bitte zuerst anmelden.', true);
-      return;
+      return { ok: false, loaded: false, reason: 'not_authenticated' };
     }
 
-    const { data, error } = await authState.client
-      .from(TABLE)
-      .select('app_state')
-      .eq('user_id', authState.user.id)
-      .maybeSingle();
+    const { data, error, source } = await fetchCloudStateRecord();
 
     if (error) {
       if (!silent) setAuthStatus(`Cloud laden fehlgeschlagen: ${mapAuthErrorMessage(error)}`, true);
       setSyncStatus('Cloud-Stand konnte nicht geladen werden', 'error');
-      return;
+      return { ok: false, loaded: false, reason: 'query_error', error };
     }
     if (!data || !data.app_state) {
       if (!silent) setAuthStatus('Kein Cloud-Stand vorhanden.', false);
       setSyncStatus('Keine Cloud-Daten vorhanden', 'info');
-      return;
+      return { ok: true, loaded: false, reason: 'empty' };
     }
 
     try {
@@ -336,9 +386,22 @@
       refreshAppViews();
       setSyncStatus(`Synchronisiert um ${formatTime(Date.now())}`, 'success');
       if (!silent) setAuthStatus('Cloud-Stand geladen.', false);
+      if (source === 'email' && authState.user && authState.user.id) {
+        await authState.client.from(TABLE).upsert(
+          {
+            user_id: authState.user.id,
+            email: authState.user.email || null,
+            app_state: data.app_state,
+            updated_at: new Date().toISOString()
+          },
+          { onConflict: 'user_id' }
+        );
+      }
+      return { ok: true, loaded: true, reason: 'loaded', source };
     } catch (e) {
       if (!silent) setAuthStatus(`Cloud-Daten ungültig: ${e.message}`, true);
       setSyncStatus('Cloud-Daten ungültig', 'error');
+      return { ok: false, loaded: false, reason: 'invalid_data', error: e };
     } finally {
       isApplyingRemoteState = false;
     }
@@ -353,21 +416,12 @@
   }
 
   async function syncCloudStateWithRetry(silent = true, retries = 3, delayMs = 450) {
+    let lastResult = { ok: false, loaded: false, reason: 'unknown' };
     for (let attempt = 0; attempt < retries; attempt++) {
-      await loadCloudState({ silent });
-      const currentState =
-        typeof global.getState === 'function'
-          ? global.getState()
-          : global.state && typeof global.state === 'object'
-            ? global.state
-            : null;
-      const hasCategories =
-        !!currentState &&
-        Array.isArray(currentState.categories) &&
-        currentState.categories.length > 0;
-      const hasSessions =
-        !!currentState && Array.isArray(currentState.sessions) && currentState.sessions.length > 0;
-      if (hasCategories || hasSessions) return;
+      lastResult = await loadCloudState({ silent });
+      if (lastResult && lastResult.ok && (lastResult.loaded || lastResult.reason === 'empty')) {
+        return lastResult;
+      }
       await new Promise((resolve) => setTimeout(resolve, delayMs));
     }
     if (!silent) {
@@ -376,6 +430,7 @@
         true
       );
     }
+    return lastResult;
   }
 
   function bindAuthEvents() {
