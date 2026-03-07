@@ -80,6 +80,9 @@ function loadState() {
 function saveState() {
   try {
     localStorage.setItem(getStorageKey(), JSON.stringify(state));
+    if (typeof window !== 'undefined' && typeof window.dispatchEvent === 'function') {
+      window.dispatchEvent(new CustomEvent('fairteams:state-saved'));
+    }
   } catch (e) {
     console.warn('Konnte Zustand nicht speichern:', e);
   }

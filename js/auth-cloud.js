@@ -7,6 +7,8 @@
     user: null
   };
   const SIGNED_OUT_SCOPE = 'signed_out';
+  let autoSaveTimer = null;
+  let isApplyingRemoteState = false;
 
   function normalizeUsername(input) {
     return String(input || '')
@@ -198,9 +200,10 @@
     setAuthStatus('Abgemeldet.', false);
   }
 
-  async function saveCloudState() {
+  async function saveCloudState(options = {}) {
+    const silent = !!options.silent;
     if (!authState.client || !authState.user) {
-      setAuthStatus('Bitte zuerst anmelden.', true);
+      if (!silent) setAuthStatus('Bitte zuerst anmelden.', true);
       return;
     }
 
@@ -212,15 +215,16 @@
 
     const { error } = await authState.client.from(TABLE).upsert(payload, { onConflict: 'user_id' });
     if (error) {
-      setAuthStatus(`Cloud speichern fehlgeschlagen: ${mapAuthErrorMessage(error)}`, true);
+      if (!silent) setAuthStatus(`Cloud speichern fehlgeschlagen: ${mapAuthErrorMessage(error)}`, true);
       return;
     }
-    setAuthStatus('Cloud speichern erfolgreich.', false);
+    if (!silent) setAuthStatus('Cloud speichern erfolgreich.', false);
   }
 
-  async function loadCloudState() {
+  async function loadCloudState(options = {}) {
+    const silent = !!options.silent;
     if (!authState.client || !authState.user) {
-      setAuthStatus('Bitte zuerst anmelden.', true);
+      if (!silent) setAuthStatus('Bitte zuerst anmelden.', true);
       return;
     }
 
@@ -231,11 +235,11 @@
       .maybeSingle();
 
     if (error) {
-      setAuthStatus(`Cloud laden fehlgeschlagen: ${mapAuthErrorMessage(error)}`, true);
+      if (!silent) setAuthStatus(`Cloud laden fehlgeschlagen: ${mapAuthErrorMessage(error)}`, true);
       return;
     }
     if (!data || !data.app_state) {
-      setAuthStatus('Kein Cloud-Stand vorhanden.', false);
+      if (!silent) setAuthStatus('Kein Cloud-Stand vorhanden.', false);
       return;
     }
 
@@ -243,13 +247,23 @@
       if (typeof global.applyImportedState !== 'function') {
         throw new Error('applyImportedState ist nicht verfügbar.');
       }
+      isApplyingRemoteState = true;
       global.applyImportedState(data.app_state);
       refreshAppViews();
-
-      setAuthStatus('Cloud-Stand geladen.', false);
+      if (!silent) setAuthStatus('Cloud-Stand geladen.', false);
     } catch (e) {
-      setAuthStatus(`Cloud-Daten ungültig: ${e.message}`, true);
+      if (!silent) setAuthStatus(`Cloud-Daten ungültig: ${e.message}`, true);
+    } finally {
+      isApplyingRemoteState = false;
     }
+  }
+
+  function scheduleAutoSave() {
+    if (!authState.client || !authState.user || isApplyingRemoteState) return;
+    if (autoSaveTimer) clearTimeout(autoSaveTimer);
+    autoSaveTimer = setTimeout(() => {
+      saveCloudState({ silent: true });
+    }, 700);
   }
 
   function bindAuthEvents() {
@@ -258,6 +272,9 @@
     document.getElementById('signOutBtn')?.addEventListener('click', signOut);
     document.getElementById('cloudSaveBtn')?.addEventListener('click', saveCloudState);
     document.getElementById('cloudLoadBtn')?.addEventListener('click', loadCloudState);
+    if (typeof window !== 'undefined' && typeof window.addEventListener === 'function') {
+      window.addEventListener('fairteams:state-saved', scheduleAutoSave);
+    }
   }
 
   async function bootstrap() {
@@ -287,11 +304,17 @@
     authState.user = data && data.session ? data.session.user : null;
     switchStorageScopeForUser(authState.user);
     renderAuthState();
+    if (authState.user) {
+      await loadCloudState({ silent: true });
+    }
 
     authState.client.auth.onAuthStateChange(async (_event, session) => {
       authState.user = session ? session.user : null;
       switchStorageScopeForUser(authState.user);
       renderAuthState();
+      if (authState.user) {
+        await loadCloudState({ silent: true });
+      }
     });
   }
 
