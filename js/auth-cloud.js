@@ -175,6 +175,17 @@
       setAuthStatus(`Anmeldung fehlgeschlagen: ${mapAuthErrorMessage(error)}`, true);
       return;
     }
+
+    try {
+      const { data: userData } = await authState.client.auth.getUser();
+      authState.user = userData && userData.user ? userData.user : authState.user;
+      switchStorageScopeForUser(authState.user);
+      renderAuthState();
+      await syncCloudStateWithRetry(false);
+    } catch {
+      // Fallback auf onAuthStateChange
+    }
+
     const passwordInput = document.getElementById('authPassword');
     if (passwordInput) passwordInput.value = '';
     setAuthStatus('Anmeldung erfolgreich.', false);
@@ -341,6 +352,32 @@
     }, 700);
   }
 
+  async function syncCloudStateWithRetry(silent = true, retries = 3, delayMs = 450) {
+    for (let attempt = 0; attempt < retries; attempt++) {
+      await loadCloudState({ silent });
+      const currentState =
+        typeof global.getState === 'function'
+          ? global.getState()
+          : global.state && typeof global.state === 'object'
+            ? global.state
+            : null;
+      const hasCategories =
+        !!currentState &&
+        Array.isArray(currentState.categories) &&
+        currentState.categories.length > 0;
+      const hasSessions =
+        !!currentState && Array.isArray(currentState.sessions) && currentState.sessions.length > 0;
+      if (hasCategories || hasSessions) return;
+      await new Promise((resolve) => setTimeout(resolve, delayMs));
+    }
+    if (!silent) {
+      setAuthStatus(
+        'Cloud-Stand konnte nicht geladen werden. Bitte E-Mail/Benutzerkonto prüfen oder Seite neu laden.',
+        true
+      );
+    }
+  }
+
   function bindAuthEvents() {
     document.getElementById('signInBtn')?.addEventListener('click', signIn);
     document.getElementById('signUpBtn')?.addEventListener('click', signUp);
@@ -389,7 +426,7 @@
     switchStorageScopeForUser(authState.user);
     renderAuthState();
     if (authState.user) {
-      await loadCloudState({ silent: true });
+      await syncCloudStateWithRetry(true);
     } else {
       setSyncStatus('Nicht verbunden', 'info');
     }
@@ -399,7 +436,7 @@
       switchStorageScopeForUser(authState.user);
       renderAuthState();
       if (authState.user) {
-        await loadCloudState({ silent: true });
+        await syncCloudStateWithRetry(true);
       } else {
         setSyncStatus('Nicht verbunden', 'info');
       }
