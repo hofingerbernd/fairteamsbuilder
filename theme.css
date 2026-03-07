@@ -60,42 +60,20 @@ button {
   transition: 0.15s;
 }
 
-button.primary {
-  background: #374151;
-  color: white;
-}
-
-button.primary:hover {
-  background: #1f2937;
-}
-
-button.secondary {
-  background: #6b7280;
-  color: white;
-}
-
-button.secondary:hover {
-  background: #4b5563;
-}
-
-button.ghost {
-  background: transparent;
-  border: 1px solid rgba(148, 163, 184, 0.5);
-  color: inherit;
-}
-
-button.ghost:hover {
-  background: rgba(148, 163, 184, 0.12);
-}
-
+button.primary,
+button.secondary,
+button.ghost,
 button.danger {
-  background: #fce7f3;
-  color: #ec4899;
-  border: 1px solid #f9a8d4;
+  background: #bae6fd;
+  color: #0c4a6e;
+  border: 1px solid #7dd3fc;
 }
 
+button.primary:hover,
+button.secondary:hover,
+button.ghost:hover,
 button.danger:hover {
-  background: #fbcfe8;
+  background: #7dd3fc;
 }
 
 button.small {
