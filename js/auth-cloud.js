@@ -165,7 +165,7 @@
       userLabel.textContent = loggedIn ? `Angemeldet: ${displayName}` : 'Nicht angemeldet.';
     }
     if (tabLabel) {
-      tabLabel.textContent = loggedIn ? `Angemeldet: ${displayName}` : 'Anmeldung';
+      tabLabel.textContent = loggedIn ? 'Angemeldet' : 'Bitte anmelden';
     }
     if (emailInput) emailInput.disabled = loggedIn;
     if (passwordInput) passwordInput.disabled = loggedIn;
