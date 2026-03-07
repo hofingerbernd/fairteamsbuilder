@@ -60,12 +60,8 @@
         background: rgba(0, 0, 0, 0.02);
       }
 
-      .auth-tab-wrap summary {
-        list-style: none;
-      }
-
-      .auth-tab-wrap summary::-webkit-details-marker {
-        display: none;
+      .auth-tab-trigger {
+        cursor: pointer;
       }
 
       .auth-tab-panel {
@@ -75,6 +71,14 @@
         z-index: 20;
         background: #ffffff;
         box-shadow: 0 8px 22px rgba(15, 23, 42, 0.12);
+      }
+
+      .auth-tab-wrap.open .auth-tab-panel {
+        display: block;
+      }
+
+      .auth-tab-wrap.open .auth-tab-trigger {
+        background: #bae6fd;
       }
 
       .header-auth-fields {
@@ -342,9 +346,17 @@
       <nav class="header-tabs" aria-label="Bereich wechseln">
         <a class="header-tab active" href="./index.html">Builder</a>
         <a class="header-tab" href="./pool-manager.html">Verwaltung</a>
-        <details class="auth-tab-wrap">
-          <summary class="header-tab"><span id="authTabLabel">Anmeldung</span></summary>
-          <div class="header-auth auth-tab-panel">
+        <div class="auth-tab-wrap" id="authTabWrap">
+          <button
+            id="authTabBtn"
+            type="button"
+            class="header-tab auth-tab-trigger"
+            aria-controls="authPanel"
+            aria-expanded="false"
+          >
+            <span id="authTabLabel">Anmeldung</span>
+          </button>
+          <div id="authPanel" class="header-auth auth-tab-panel" hidden>
             <div class="header-auth-fields">
               <div>
                 <label for="authEmail">Benutzername</label>
@@ -364,7 +376,7 @@
             <div id="authStatus" class="header-auth-status"></div>
             <div id="syncStatus" class="header-auth-status">Nicht verbunden</div>
           </div>
-        </details>
+        </div>
       </nav>
     </header>
 
@@ -514,6 +526,33 @@
       </div>
     </section>
 
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const wrap = document.getElementById('authTabWrap');
+        const trigger = document.getElementById('authTabBtn');
+        const panel = document.getElementById('authPanel');
+        if (!wrap || !trigger || !panel) return;
+
+        const setOpen = (open) => {
+          wrap.classList.toggle('open', open);
+          trigger.setAttribute('aria-expanded', String(open));
+          if (open) {
+            panel.removeAttribute('hidden');
+          } else {
+            panel.setAttribute('hidden', '');
+          }
+        };
+
+        trigger.addEventListener('click', (e) => {
+          e.preventDefault();
+          setOpen(panel.hasAttribute('hidden'));
+        });
+
+        document.addEventListener('click', (e) => {
+          if (!wrap.contains(e.target)) setOpen(false);
+        });
+      });
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="./supabase-config.local.js"></script>
     <script src="./supabase-config.js"></script>
