@@ -121,19 +121,6 @@
     refreshAppViews();
   }
 
-  function resetLocalViewState() {
-    if (typeof global.createEmptyState !== 'function' || typeof global.applyImportedState !== 'function') {
-      return;
-    }
-    isApplyingRemoteState = true;
-    try {
-      global.applyImportedState(global.createEmptyState());
-      refreshAppViews();
-    } finally {
-      isApplyingRemoteState = false;
-    }
-  }
-
   function renderAuthState() {
     const userLabel = document.getElementById('authUserLabel');
     const tabLabel = document.getElementById('authTabLabel');
@@ -402,7 +389,6 @@
     switchStorageScopeForUser(authState.user);
     renderAuthState();
     if (authState.user) {
-      resetLocalViewState();
       await loadCloudState({ silent: true });
     } else {
       setSyncStatus('Nicht verbunden', 'info');
@@ -413,7 +399,6 @@
       switchStorageScopeForUser(authState.user);
       renderAuthState();
       if (authState.user) {
-        resetLocalViewState();
         await loadCloudState({ silent: true });
       } else {
         setSyncStatus('Nicht verbunden', 'info');
