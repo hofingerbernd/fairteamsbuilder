@@ -104,6 +104,20 @@
     return raw;
   }
 
+  function formatLoadFailure(result) {
+    if (!result) return 'Unbekannter Fehler.';
+    if (result.reason === 'query_error' && result.error) {
+      return mapAuthErrorMessage(result.error);
+    }
+    if (result.reason === 'invalid_data' && result.error) {
+      return result.error.message || 'Cloud-Daten ungültig.';
+    }
+    if (result.reason === 'not_authenticated') {
+      return 'Nicht angemeldet.';
+    }
+    return 'Unbekannter Fehler.';
+  }
+
   function readConfig() {
     const url = String(global.FAIRTEAMS_SUPABASE_URL || '').trim();
     const key = String(global.FAIRTEAMS_SUPABASE_ANON_KEY || '').trim();
@@ -207,7 +221,10 @@
       return;
     }
     if (syncResult && !syncResult.ok) {
-      setAuthStatus('Anmeldung erfolgreich, aber Cloud-Stand konnte nicht geladen werden.', true);
+      setAuthStatus(
+        `Anmeldung erfolgreich, aber Cloud-Stand konnte nicht geladen werden: ${formatLoadFailure(syncResult)}`,
+        true
+      );
       return;
     }
     setAuthStatus('Anmeldung erfolgreich.', false);
@@ -431,10 +448,7 @@
       await new Promise((resolve) => setTimeout(resolve, delayMs));
     }
     if (!silent) {
-      setAuthStatus(
-        'Cloud-Stand konnte nicht geladen werden. Bitte E-Mail/Benutzerkonto prüfen oder Seite neu laden.',
-        true
-      );
+      setAuthStatus(`Cloud-Stand konnte nicht geladen werden: ${formatLoadFailure(lastResult)}`, true);
     }
     return lastResult;
   }
