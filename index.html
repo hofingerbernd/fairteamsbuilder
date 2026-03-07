@@ -304,6 +304,26 @@
         max-height: 0;
       }
 
+      .section-icon {
+        width: 1.05rem;
+        height: 1.05rem;
+        display: inline-flex;
+        color: #ec4899;
+        flex: 0 0 auto;
+        margin-right: 0.35rem;
+        vertical-align: text-bottom;
+      }
+
+      .section-icon svg {
+        width: 100%;
+        height: 100%;
+        fill: currentColor;
+      }
+
+      .section-title-pink {
+        color: #ec4899;
+      }
+
     </style>
   </head>
 
@@ -340,7 +360,16 @@
     <div class="app">
       <!-- =====================  LINK ZUR POOL-VERWALTUNG  ========================== -->
       <section class="card">
-        <h2>👥 Pools verwalten</h2>
+        <h2>
+          <span class="section-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <path
+                d="M7 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6zm10 0a3 3 0 1 1 0-6 3 3 0 0 1 0 6zM2 19a5 5 0 0 1 10 0v1H2v-1zm10 1v-1a6.98 6.98 0 0 0-1.63-4.5A5 5 0 0 1 22 19v1h-10z"
+              />
+            </svg>
+          </span>
+          <span class="section-title-pink">Pools verwalten</span>
+        </h2>
         <p class="muted">
           Die Verwaltung von Kategorien, Pools und Spielern erfolgt direkt im Fairteamsbuilder.
         </p>
@@ -352,7 +381,16 @@
       <!-- =====================  TEAM GENERATOR  ========================== -->
       <section class="card">
         <div style="display: flex; justify-content: space-between; align-items: center">
-          <h2>🏆 Teams generieren</h2>
+          <h2>
+            <span class="section-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <path
+                  d="M18 4h2a1 1 0 0 1 1 1v3a4 4 0 0 1-4 4h-1.1A5 5 0 0 1 13 14.9V17h2a1 1 0 0 1 1 1v2H8v-2a1 1 0 0 1 1-1h2v-2.1A5 5 0 0 1 8.1 12H7a4 4 0 0 1-4-4V5a1 1 0 0 1 1-1h2V3h12v1zm-1 6a2 2 0 0 0 2-2V6h-1v2a2 2 0 0 1-.12.68A4.96 4.96 0 0 1 17 10zM6 6H5v2a2 2 0 0 0 2 2 4.96 4.96 0 0 1-2.88-1.32A2 2 0 0 1 6 8V6z"
+                />
+              </svg>
+            </span>
+            <span class="section-title-pink">Teams generieren</span>
+          </h2>
         </div>
         <div id="statusMessage" class="status-message" aria-live="polite" role="status"></div>
 
@@ -467,7 +505,16 @@
 
     <!-- =====================  GESPEICHERTE TEAMS  ========================== -->
     <section class="card" style="max-width: 900px; margin: 1rem auto">
-      <h2>💾 Gespeicherte Team-Konfigurationen</h2>
+      <h2>
+        <span class="section-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24">
+            <path
+              d="M5 3h11l3 3v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V3zm2 0v5h8V3H7zm1 10h8v6H8v-6z"
+            />
+          </svg>
+        </span>
+        <span class="section-title-pink">Gespeicherte Team-Konfigurationen</span>
+      </h2>
       <div id="savedSessions"></div>
 
       <div class="row" style="margin-top: 1rem">
