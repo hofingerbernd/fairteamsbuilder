@@ -423,7 +423,8 @@
     try {
       const cloudCounts = getCountsFromStateLike(data.app_state);
       if (typeof global.applyImportedState !== 'function') {
-        throw new Error('applyImportedState ist nicht verfügbar.');
+        setSyncStatus(`Verbunden (${cloudCounts.categories}K/${cloudCounts.pools}P in Cloud)`, 'success');
+        return { ok: true, loaded: false, reason: 'no_state_target' };
       }
       isApplyingRemoteState = true;
       global.applyImportedState(data.app_state);

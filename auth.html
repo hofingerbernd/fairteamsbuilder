@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Fairteamsbuilder - Anmeldung</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#16a34a" />
+    <link rel="stylesheet" href="./theme.css" />
+    <style>
+      header {
+        background: #ffffff !important;
+        color: #111827 !important;
+        border-bottom: 1px solid var(--border);
+        padding: 20px;
+        display: flex;
+        align-items: flex-end;
+      }
+
+      .header-tabs {
+        display: flex;
+        gap: 0.35rem;
+        align-items: flex-end;
+        flex-wrap: wrap;
+      }
+
+      .header-tab {
+        display: inline-flex;
+        align-items: center;
+        text-decoration: none;
+        padding: 0.38rem 0.75rem;
+        border: 1px solid #7dd3fc;
+        background: #e0f2fe;
+        color: #000000;
+        border-top-left-radius: 0.65rem;
+        border-top-right-radius: 0.65rem;
+        border-bottom-left-radius: 0.2rem;
+        border-bottom-right-radius: 0.2rem;
+        font-size: 0.78rem;
+        font-weight: 600;
+      }
+
+      .header-tab.active {
+        background: #bae6fd;
+      }
+
+      .header-tab:hover {
+        background: #7dd3fc;
+      }
+
+      .page {
+        max-width: 920px;
+        margin: 0 auto;
+        padding: 1rem;
+      }
+
+      .auth-card {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 0.65rem;
+        padding: 1rem;
+      }
+
+      .auth-fields {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(180px, 1fr));
+        gap: 0.5rem;
+      }
+
+      .auth-actions {
+        margin-top: 0.5rem;
+        display: flex;
+        gap: 0.4rem;
+        flex-wrap: wrap;
+      }
+
+      .auth-status {
+        margin-top: 0.35rem;
+        font-size: 0.85rem;
+      }
+
+      @media (max-width: 720px) {
+        .auth-fields {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <nav class="header-tabs" aria-label="Bereich wechseln">
+        <a class="header-tab" href="./index.html">Builder</a>
+        <a class="header-tab" href="./pool-manager.html">Verwaltung</a>
+        <a class="header-tab active" href="./auth.html"><span id="authTabLabel">Anmeldung</span></a>
+      </nav>
+    </header>
+
+    <main class="page">
+      <section class="auth-card">
+        <div class="auth-fields">
+          <div>
+            <label for="authEmail">Benutzername</label>
+            <input id="authEmail" type="text" placeholder="z.B. trainer01" autocomplete="username" />
+          </div>
+          <div>
+            <label for="authPassword">Passwort</label>
+            <input id="authPassword" type="password" autocomplete="current-password" />
+          </div>
+        </div>
+
+        <div class="auth-actions">
+          <button id="signInBtn" class="secondary small">Anmelden</button>
+          <button id="signUpBtn" class="ghost small">Registrieren</button>
+          <button id="signOutBtn" class="danger small" disabled>Abmelden</button>
+        </div>
+
+        <div id="authUserLabel" class="auth-status">Nicht angemeldet.</div>
+        <div id="authStatus" class="auth-status"></div>
+        <div id="syncStatus" class="auth-status">Nicht verbunden</div>
+      </section>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="./supabase-config.local.js"></script>
+    <script src="./supabase-config.js"></script>
+    <script src="./js/auth-cloud.js"></script>
+  </body>
+</html>
