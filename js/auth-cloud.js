@@ -559,21 +559,31 @@
       setSyncStatus('Nicht verbunden', 'info');
     }
 
-    authState.client.auth.onAuthStateChange(async (_event, session) => {
+    authState.client.auth.onAuthStateChange(async (event, session) => {
+      const previousUserId = authState.user && authState.user.id ? authState.user.id : null;
       authState.user = session ? session.user : null;
-      if (authState.user) {
-        try {
-          isHydratingCloudState = true;
-          switchStorageScopeForUser(authState.user);
-          renderAuthState();
-          await syncCloudStateWithRetry(true);
-        } finally {
-          isHydratingCloudState = false;
-        }
-      } else {
+      const nextUserId = authState.user && authState.user.id ? authState.user.id : null;
+
+      if (!authState.user) {
         switchStorageScopeForUser(null);
         renderAuthState();
         setSyncStatus('Nicht verbunden', 'info');
+        return;
+      }
+
+      // Token-Refresh darf lokale Änderungen nicht mit älteren Cloud-Daten überschreiben.
+      if (event === 'TOKEN_REFRESHED' && previousUserId === nextUserId) {
+        renderAuthState();
+        return;
+      }
+
+      try {
+        isHydratingCloudState = true;
+        switchStorageScopeForUser(authState.user);
+        renderAuthState();
+        await syncCloudStateWithRetry(true);
+      } finally {
+        isHydratingCloudState = false;
       }
     });
   }
