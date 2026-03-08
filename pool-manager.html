@@ -11,7 +11,9 @@
         background: #ffffff !important;
         color: #111827 !important;
         border-bottom: 1px solid var(--border);
-        padding: 20px 20px;
+        padding: 14px 20px 0;
+        min-height: 112px;
+        box-sizing: border-box;
         display: block;
         position: relative;
         overflow: hidden;
@@ -24,8 +26,8 @@
         right: 0;
         top: 0;
         bottom: 0;
-        background: url('./img/logo_fair.png') center center / 880px auto no-repeat;
-        opacity: 0.18;
+        background: url('./img/logo_fair.png') center bottom / 880px auto no-repeat;
+        opacity: 0.16;
         pointer-events: none;
       }
 
@@ -40,6 +42,8 @@
         display: flex;
         gap: 0.35rem;
         align-items: flex-end;
+        flex-wrap: wrap;
+        margin-bottom: -1px;
       }
 
       .header-tab {
@@ -117,14 +121,23 @@
       }
 
       @media (max-width: 960px) {
+        header {
+          min-height: 88px;
+          padding: 10px 12px 0;
+        }
+
+        header::before {
+          background-size: 620px auto;
+          opacity: 0.14;
+        }
+
         .header-auth-fields {
           grid-template-columns: 1fr;
         }
 
         .header-tabs {
-          order: 2;
           width: 100%;
-                  }
+        }
 
         .auth-tab-panel {
           position: static;
@@ -155,7 +168,19 @@
         display: flex;
         gap: 0.6rem;
         align-items: flex-end;
-              }
+        flex-wrap: wrap;
+      }
+
+      .player-entry-row {
+        display: grid;
+        grid-template-columns: minmax(220px, 1fr) 110px auto;
+        gap: 0.6rem;
+        align-items: end;
+      }
+
+      .player-entry-row .primary {
+        white-space: nowrap;
+      }
 
       textarea {
         width: 100%;
@@ -166,6 +191,12 @@
         font-size: 0.95rem;
         resize: vertical;
         min-height: 120px;
+      }
+
+      @media (max-width: 900px) {
+        .player-entry-row {
+          grid-template-columns: 1fr;
+        }
       }
 
       .pool-list {
@@ -367,7 +398,7 @@
         </h2>
         <p class="muted" id="playerHint">Wähle zuerst einen Pool.</p>
 
-        <div class="row">
+        <div class="player-entry-row">
           <div style="flex: 1; min-width: 220px">
             <label for="playerBulkInput">Spielernamen (eine Zeile pro Name)</label>
             <textarea

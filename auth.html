@@ -11,7 +11,9 @@
         background: #ffffff !important;
         color: #111827 !important;
         border-bottom: 1px solid var(--border);
-        padding: 20px;
+        padding: 14px 20px 0;
+        min-height: 112px;
+        box-sizing: border-box;
         display: block;
         position: relative;
         overflow: hidden;
@@ -24,8 +26,8 @@
         right: 0;
         top: 0;
         bottom: 0;
-        background: url('./img/logo_fair.png') center center / 880px auto no-repeat;
-        opacity: 0.18;
+        background: url('./img/logo_fair.png') center bottom / 880px auto no-repeat;
+        opacity: 0.16;
         pointer-events: none;
       }
 
@@ -40,7 +42,9 @@
         display: flex;
         gap: 0.35rem;
         align-items: flex-end;
-              }
+        flex-wrap: wrap;
+        margin-bottom: -1px;
+      }
 
       .header-tab {
         display: inline-flex;
@@ -97,6 +101,16 @@
       }
 
       @media (max-width: 720px) {
+        header {
+          min-height: 88px;
+          padding: 10px 12px 0;
+        }
+
+        header::before {
+          background-size: 620px auto;
+          opacity: 0.14;
+        }
+
         .auth-fields {
           grid-template-columns: 1fr;
         }
