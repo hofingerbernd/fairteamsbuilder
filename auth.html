@@ -12,9 +12,7 @@
         color: #111827 !important;
         border-bottom: 1px solid var(--border);
         padding: 20px;
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-end;
+        display: block;
         position: relative;
         overflow: hidden;
       }
@@ -22,9 +20,12 @@
       header::before {
         content: '';
         position: absolute;
-        inset: 0;
-        background: url('./img/logo1.png') center center / contain no-repeat;
-        opacity: 0.22;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        background: url('./img/logo1.png') center center / 880px auto no-repeat;
+        opacity: 0.18;
         pointer-events: none;
       }
 
@@ -34,11 +35,12 @@
       }
 
       .header-tabs {
+        position: relative;
+        z-index: 1;
         display: flex;
         gap: 0.35rem;
         align-items: flex-end;
-        flex-wrap: wrap;
-      }
+              }
 
       .header-tab {
         display: inline-flex;
@@ -87,8 +89,7 @@
         margin-top: 0.5rem;
         display: flex;
         gap: 0.4rem;
-        flex-wrap: wrap;
-      }
+              }
 
       .auth-status {
         margin-top: 0.35rem;
@@ -96,12 +97,6 @@
       }
 
       @media (max-width: 720px) {
-        header {
-          flex-direction: column;
-          align-items: stretch;
-          gap: 0.5rem;
-        }
-
         .auth-fields {
           grid-template-columns: 1fr;
         }
