@@ -15,18 +15,22 @@
         display: flex;
         justify-content: space-between;
         align-items: flex-end;
+        position: relative;
+        overflow: hidden;
       }
 
-      .header-brand {
-        display: inline-flex;
-        align-items: center;
+      header::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: url('./img/logo1.png') center center / contain no-repeat;
+        opacity: 0.22;
+        pointer-events: none;
       }
 
-      .header-brand img {
-        display: block;
-        height: 56px;
-        filter: drop-shadow(0 1px 2px rgba(15, 23, 42, 0.18));
-        width: auto;
+      header > * {
+        position: relative;
+        z-index: 1;
       }
 
       .header-tabs {
@@ -98,10 +102,6 @@
           gap: 0.5rem;
         }
 
-        .header-brand img {
-          height: 46px;
-        }
-
         .auth-fields {
           grid-template-columns: 1fr;
         }
@@ -110,9 +110,6 @@
   </head>
   <body>
     <header>
-      <a class="header-brand" href="./index.html" aria-label="FairTeamsBuilder Start">
-        <img src="./img/logo.png" alt="FairTeamsBuilder Logo" />
-      </a>
       <nav class="header-tabs" aria-label="Bereich wechseln">
         <a class="header-tab" href="./index.html">Builder</a>
         <a class="header-tab" href="./pool-manager.html">Verwaltung</a>
