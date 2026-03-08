@@ -37,13 +37,14 @@
       }
 
       .header-tabs {
-        position: relative;
+        position: absolute;
+        left: 20px;
+        bottom: -1px;
         z-index: 1;
         display: flex;
         gap: 0.35rem;
         align-items: flex-end;
         flex-wrap: wrap;
-        margin-bottom: -1px;
       }
 
       .header-tab {
@@ -136,7 +137,11 @@
         }
 
         .header-tabs {
+          position: relative;
+          left: auto;
+          bottom: auto;
           width: 100%;
+          margin-bottom: 0;
         }
 
         .auth-tab-panel {

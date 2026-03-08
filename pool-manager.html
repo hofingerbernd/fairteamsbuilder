@@ -37,13 +37,14 @@
       }
 
       .header-tabs {
-        position: relative;
+        position: absolute;
+        left: 20px;
+        bottom: -1px;
         z-index: 1;
         display: flex;
         gap: 0.35rem;
         align-items: flex-end;
         flex-wrap: wrap;
-        margin-bottom: -1px;
       }
 
       .header-tab {
@@ -136,7 +137,11 @@
         }
 
         .header-tabs {
+          position: relative;
+          left: auto;
+          bottom: auto;
           width: 100%;
+          margin-bottom: 0;
         }
 
         .auth-tab-panel {
@@ -173,13 +178,14 @@
 
       .player-entry-row {
         display: grid;
-        grid-template-columns: minmax(220px, 1fr) 110px auto;
+        grid-template-columns: minmax(0, 1fr) 110px;
         gap: 0.6rem;
         align-items: end;
       }
 
       .player-entry-row .primary {
-        white-space: nowrap;
+        grid-column: 1 / -1;
+        justify-self: start;
       }
 
       textarea {
@@ -399,7 +405,7 @@
         <p class="muted" id="playerHint">Wähle zuerst einen Pool.</p>
 
         <div class="player-entry-row">
-          <div style="flex: 1; min-width: 220px">
+          <div style="min-width: 0">
             <label for="playerBulkInput">Spielernamen (eine Zeile pro Name)</label>
             <textarea
               id="playerBulkInput"
