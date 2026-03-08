@@ -18,6 +18,17 @@
         flex-wrap: wrap;
       }
 
+      .header-brand {
+        display: inline-flex;
+        align-items: center;
+      }
+
+      .header-brand img {
+        display: block;
+        height: 44px;
+        width: auto;
+      }
+
       .header-tabs {
         display: flex;
         gap: 0.35rem;
@@ -114,6 +125,10 @@
           order: 1;
           width: 100%;
           flex-wrap: wrap;
+        }
+
+        .header-brand img {
+          height: 38px;
         }
 
         .auth-tab-panel {
@@ -328,6 +343,9 @@
 
   <body>
     <header>
+      <a class="header-brand" href="./index.html" aria-label="FairTeamsBuilder Start">
+        <img src="./img/logo1.png" alt="FairTeamsBuilder Logo" />
+      </a>
       <nav class="header-tabs" aria-label="Bereich wechseln">
         <a class="header-tab active" href="./index.html">Builder</a>
         <a class="header-tab" href="./pool-manager.html">Verwaltung</a>
