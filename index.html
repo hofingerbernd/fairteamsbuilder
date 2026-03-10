@@ -484,7 +484,6 @@
           </p>
 
           <div id="assignmentArea" style="display: none; margin-top: 1rem">
-            <h3>Spielerzuweisung</h3>
             <p class="muted" id="assignmentInfo"></p>
             <div
               style="
@@ -496,23 +495,6 @@
             >
               <table id="assignmentTable" style="width: 100%; border-collapse: collapse"></table>
             </div>
-
-            <h3>Teamnamen & Farben</h3>
-            <div id="teamNameEditor" style="display: none">
-              <div id="teamNameList"></div>
-            </div>
-
-            <div class="row" style="margin-top: 0.8rem">
-              <button class="primary" id="generateTeamsBtn" disabled>
-                Teamzugehörigkeit generieren
-              </button>
-              <button id="resetAssignmentsBtn" class="ghost small" disabled>
-                Teamzugehörigkeit zurücksetzen
-              </button>
-            </div>
-            <button id="newDistributionBtn" class="danger" style="margin-top: 0.8rem">
-              ↻ Zurück zum Beginn (Pools auswählen)
-            </button>
           </div>
         </div>
 
@@ -524,8 +506,25 @@
           </div>
           <h3>Schritt 4</h3>
           <p id="builderResultHint" class="muted">
-            Bitte in Schritt 3 auf „Teamzugehörigkeit generieren“ klicken.
+            Bitte in Schritt 4 auf „Teamzugehörigkeit generieren“ klicken.
           </p>
+
+          <h3>Teamnamen & Farben</h3>
+          <div id="teamNameEditor" style="display: none">
+            <div id="teamNameList"></div>
+          </div>
+
+          <div class="row" style="margin-top: 0.8rem">
+            <button class="primary" id="generateTeamsBtn" disabled>
+              Teamzugehörigkeit generieren
+            </button>
+            <button id="resetAssignmentsBtn" class="ghost small" disabled>
+              Teamzugehörigkeit zurücksetzen
+            </button>
+          </div>
+          <button id="newDistributionBtn" class="danger" style="margin-top: 0.8rem">
+            ↻ Zurück zum Beginn (Pools auswählen)
+          </button>
 
           <div id="teamsResult" style="display: none; margin-top: 1rem">
             <h3>🎉 Ergebnis</h3>
