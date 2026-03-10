@@ -7,11 +7,11 @@ function prepareAssignment() {
 
   if (!selectedPoolIds.length) {
     setStatus('Bitte mindestens einen Pool auswählen.', 'error');
-    return;
+    return false;
   }
   if (!teamCount || teamCount < 2) {
     setStatus('Bitte mindestens 2 Teams einstellen.', 'error');
-    return;
+    return false;
   }
 
   const players = [];
@@ -49,6 +49,7 @@ function prepareAssignment() {
   document.getElementById('assignmentInfo').textContent =
     `${players.length} Spieler geladen. Haken entfernen, wenn jemand heute fehlt.`;
   setStatus(`${players.length} Spieler wurden geladen.`, 'success');
+  return true;
 }
 
 /* ============================================================

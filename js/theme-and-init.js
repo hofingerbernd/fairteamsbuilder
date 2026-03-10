@@ -67,6 +67,10 @@ function initBuilderFormPages() {
 
   nextBtn.addEventListener('click', () => {
     if (currentPage < pages.length - 1) {
+      if (currentPage === 1) {
+        const loaded = prepareAssignment();
+        if (!loaded) return;
+      }
       currentPage += 1;
       renderPage();
     }
@@ -89,9 +93,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   renderMultiPoolList();
   renderSessionList();
-
-  // Spieler laden
-  document.getElementById('prepareAssignmentBtn')?.addEventListener('click', prepareAssignment);
 
   // Teams generieren
   document.getElementById('generateTeamsBtn')?.addEventListener('click', generateTeams);
