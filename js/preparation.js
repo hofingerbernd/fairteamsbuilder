@@ -36,10 +36,14 @@ function prepareAssignment() {
   applyPrevTeamConfig(prevConfig);
 
   document.getElementById('assignmentArea').style.display = 'block';
+  const point3Hint = document.getElementById('builderPoint3Hint');
+  if (point3Hint) point3Hint.style.display = 'none';
   document.getElementById('generateTeamsBtn').disabled = false;
   document.getElementById('resetAssignmentsBtn').disabled = false;
 
   document.getElementById('teamsResult').style.display = 'none';
+  const resultHint = document.getElementById('builderResultHint');
+  if (resultHint) resultHint.style.display = 'block';
   document.getElementById('tournamentList').style.display = 'none';
 
   document.getElementById('assignmentInfo').textContent =

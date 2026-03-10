@@ -162,4 +162,6 @@ function renderTeamsResult(teams, cfg) {
   });
 
   document.getElementById('teamsResult').style.display = 'block';
+  const resultHint = document.getElementById('builderResultHint');
+  if (resultHint) resultHint.style.display = 'none';
 }
