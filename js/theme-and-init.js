@@ -36,7 +36,7 @@ function initBuilderFormPages() {
     document.getElementById('builderPage3'),
     document.getElementById('builderPage4')
   ].filter(Boolean);
-  const pageNames = ['Punkt 1', 'Punkt 2', 'Punkt 3', 'Ergebnis'];
+  const pageNames = ['Schritt 1', 'Schritt 2', 'Schritt 3', 'Schritt 4'];
 
   const backBtn = document.getElementById('builderBackBtn');
   const nextBtn = document.getElementById('builderNextBtn');
@@ -123,6 +123,6 @@ document.addEventListener('DOMContentLoaded', () => {
   // Neue Verteilung
   document.getElementById('newDistributionBtn')?.addEventListener('click', newDistribution);
 
-  // Formularseiten (Punkt 1 / Punkt 2 / Punkt 3 / Ergebnis)
+  // Formularseiten (Schritt 1 / Schritt 2 / Schritt 3 / Schritt 4)
   initBuilderFormPages();
 });
