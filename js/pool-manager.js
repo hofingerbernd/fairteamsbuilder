@@ -4,8 +4,7 @@
  * Für Fairteamsbuilder und andere Apps
  */
 
-const STORAGE_KEY_BASE = 'mannschaften_premium_state_v3_categories';
-let storageScope = 'signed_out';
+const STORAGE_KEY = 'mannschaften_premium_state_v3_categories';
 
 let state = {
   categories: [],
@@ -27,40 +26,45 @@ function createEmptyState() {
   };
 }
 
-function getStorageKey() {
-  return `${STORAGE_KEY_BASE}__${storageScope}`;
-}
-
-function setStorageScope(scope) {
-  const nextScope = String(scope || '').trim();
-  storageScope = nextScope || 'signed_out';
-  loadState();
-}
-
 /* ============================================================
    STATE & STORAGE
    ============================================================*/
 function loadState() {
   try {
-    const raw = localStorage.getItem(getStorageKey());
+    const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) {
       const parsed = JSON.parse(raw);
       state = normalizeImportedState(parsed);
+      saveState();
     } else {
-      state = createEmptyState();
+      // Versuche alte Struktur zu migrieren (pools -> default category)
+      const oldKey = 'mannschaften_premium_state_v2_modeAB';
+      const oldRaw = localStorage.getItem(oldKey);
+      if (oldRaw) {
+        const oldState = JSON.parse(oldRaw);
+        if (oldState.pools && oldState.pools.length > 0) {
+          const defaultCategory = {
+            id: state.nextCategoryId++,
+            name: 'Ungeteilt',
+            pools: oldState.pools
+          };
+          state.categories.push(defaultCategory);
+          state.nextPoolId = oldState.nextPoolId || 1;
+          state.nextPlayerId = oldState.nextPlayerId || 1;
+          state.sessions = oldState.sessions || [];
+          state.nextSessionId = oldState.nextSessionId || 1;
+          saveState();
+        }
+      }
     }
   } catch (e) {
     console.warn('Konnte Zustand nicht laden:', e);
-    state = createEmptyState();
   }
 }
 
 function saveState() {
   try {
-    localStorage.setItem(getStorageKey(), JSON.stringify(state));
-    if (typeof window !== 'undefined' && typeof window.dispatchEvent === 'function') {
-      window.dispatchEvent(new CustomEvent('fairteams:state-saved'));
-    }
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
   } catch (e) {
     console.warn('Konnte Zustand nicht speichern:', e);
   }

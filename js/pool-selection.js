@@ -33,17 +33,17 @@ function renderMultiPoolList() {
     catHeaderLi.style.cssText = 'padding:0;border-top:1px solid var(--border);';
 
     const catHeader = document.createElement('div');
-    catHeader.className = 'category-header';
+    catHeader.className = 'category-header expanded';
     catHeader.textContent = cat.name;
     catHeader.setAttribute('role', 'button');
     catHeader.setAttribute('tabindex', '0');
-    catHeader.setAttribute('aria-expanded', 'false');
+    catHeader.setAttribute('aria-expanded', 'true');
     catHeaderLi.appendChild(catHeader);
     list.appendChild(catHeaderLi);
 
     // Pools-Container (wird eingeklappt/ausgeklappt)
     const poolsContainer = document.createElement('div');
-    poolsContainer.className = 'category-pools collapsed';
+    poolsContainer.className = 'category-pools';
     poolsContainer.dataset.categoryId = cat.id;
 
     pools.forEach((pool) => {

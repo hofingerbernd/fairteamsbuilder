@@ -20,6 +20,17 @@ function setStatus(message, type = 'info', timeoutMs = 3500) {
   }
 }
 
+function toggleDark() {
+  document.body.classList.toggle('dark');
+  localStorage.setItem('mannschaften_darkmode', document.body.classList.contains('dark') ? '1' : '0');
+}
+
+function loadDark() {
+  if (localStorage.getItem('mannschaften_darkmode') === '1') {
+    document.body.classList.add('dark');
+  }
+}
+
 function renderOverview() {
   const categories = state.categories || [];
   let pools = 0;
@@ -45,9 +56,9 @@ function disablePoolInputs() {
 }
 
 function disablePlayerInputs() {
-  document.getElementById('playerBulkInput').disabled = true;
+  document.getElementById('playerInput').disabled = true;
   document.getElementById('skillSelect').disabled = true;
-  document.getElementById('addPlayersBtn').disabled = true;
+  document.getElementById('addPlayerBtn').disabled = true;
   document.getElementById('playerHint').textContent = 'Wähle zuerst einen Pool.';
   document.getElementById('playerList').innerHTML = '<li class="muted">Keine Spieler im Pool.</li>';
 }
@@ -240,9 +251,9 @@ function renderPlayers() {
     return;
   }
 
-  document.getElementById('playerBulkInput').disabled = false;
+  document.getElementById('playerInput').disabled = false;
   document.getElementById('skillSelect').disabled = false;
-  document.getElementById('addPlayersBtn').disabled = false;
+  document.getElementById('addPlayerBtn').disabled = false;
   document.getElementById('playerHint').textContent = `Spieler im Pool: ${pool.name}`;
 
   const players = pool.players || [];
@@ -305,7 +316,47 @@ function renderPlayers() {
   renderOverview();
 }
 
+function exportJSON() {
+  const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'fairteamsbuilder-export.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  setStatus('JSON exportiert.', 'success');
+}
+
+function importJSON() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.json,application/json';
+  input.onchange = () => {
+    const file = input.files && input.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const imported = JSON.parse(String(e.target && e.target.result ? e.target.result : ''));
+        applyImportedState(imported);
+        uiState.currentCategoryId = state.categories.length ? state.categories[0].id : null;
+        uiState.currentPoolId = null;
+        renderCategories();
+        setStatus('JSON erfolgreich importiert.', 'success');
+      } catch (error) {
+        const message = error && error.message ? error.message : 'Ungültige JSON-Datei.';
+        setStatus(`Import fehlgeschlagen: ${message}`, 'error', 5000);
+      }
+    };
+    reader.readAsText(file);
+  };
+  input.click();
+}
+
 function bindEvents() {
+  document.getElementById('darkModeToggle').addEventListener('click', toggleDark);
+
   document.getElementById('addCategoryBtn').addEventListener('click', () => {
     const input = document.getElementById('categoryInput');
     const name = input.value.trim();
@@ -337,17 +388,14 @@ function bindEvents() {
     setStatus('Pool erstellt.', 'success');
   });
 
-  document.getElementById('addPlayersBtn').addEventListener('click', () => {
-    const bulkInput = document.getElementById('playerBulkInput');
+  document.getElementById('addPlayerBtn').addEventListener('click', () => {
+    const nameInput = document.getElementById('playerInput');
     const skillSelect = document.getElementById('skillSelect');
-    const lines = String(bulkInput.value || '')
-      .split(/\r?\n/)
-      .map((line) => line.trim())
-      .filter(Boolean);
+    const name = nameInput.value.trim();
     const skill = parseInt(skillSelect.value, 10);
 
-    if (!lines.length) {
-      setStatus('Bitte mindestens einen Spielernamen eingeben (eine Zeile pro Name).', 'error');
+    if (!name) {
+      setStatus('Bitte einen Spielernamen eingeben.', 'error');
       return;
     }
     if (!uiState.currentCategoryId || !uiState.currentPoolId) {
@@ -355,17 +403,19 @@ function bindEvents() {
       return;
     }
 
-    lines.forEach((name) => {
-      addPlayerToPool(uiState.currentCategoryId, uiState.currentPoolId, name, skill);
-    });
-    bulkInput.value = '';
+    addPlayerToPool(uiState.currentCategoryId, uiState.currentPoolId, name, skill);
+    nameInput.value = '';
     renderPlayers();
-    setStatus(`${lines.length} Spieler übernommen.`, 'success');
+    setStatus('Spieler hinzugefügt.', 'success');
   });
+
+  document.getElementById('exportJSONBtn').addEventListener('click', exportJSON);
+  document.getElementById('importJSONBtn').addEventListener('click', importJSON);
 }
 
 document.addEventListener('DOMContentLoaded', () => {
   loadState();
+  loadDark();
   bindEvents();
   renderCategories();
 });

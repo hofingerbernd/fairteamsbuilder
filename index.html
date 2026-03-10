@@ -11,149 +11,24 @@
         background: #ffffff !important;
         color: #111827 !important;
         border-bottom: 1px solid var(--border);
-        padding: 14px 20px 0;
-        min-height: 112px;
-        box-sizing: border-box;
-        display: block;
-        position: relative;
-        overflow: hidden;
-      }
-
-      header::before {
-        content: '';
-        position: absolute;
-        left: 0;
-        right: 0;
-        top: 0;
-        bottom: 0;
-        background: url('./img/logo_fair1.png') left 0 bottom / 880px auto no-repeat;
-        opacity: 0.16;
-        pointer-events: none;
-      }
-
-      header > * {
-        position: relative;
-        z-index: 1;
-      }
-
-      .header-tabs {
-        position: absolute;
-        left: 20px;
-        bottom: -1px;
-        z-index: 1;
+        padding: 0.9rem 1.5rem;
         display: flex;
-        gap: 0.35rem;
-        align-items: flex-end;
+        justify-content: space-between;
+        align-items: center;
         flex-wrap: wrap;
       }
 
-      .header-tab {
-        display: inline-flex;
+      header h1 {
+        font-size: 1.15rem;
+        letter-spacing: -0.5px;
+        display: flex;
         align-items: center;
-        text-decoration: none;
-        padding: 0.38rem 0.75rem;
-        border: 1px solid #7dd3fc;
-        background: #e0f2fe;
-        color: #000000;
-        border-top-left-radius: 0.65rem;
-        border-top-right-radius: 0.65rem;
-        border-bottom-left-radius: 0.2rem;
-        border-bottom-right-radius: 0.2rem;
-        font-size: 0.78rem;
-        font-weight: 600;
-      }
-
-      .header-tab.active {
-        background: #bae6fd;
-      }
-
-      .header-tab:hover {
-        background: #7dd3fc;
-      }
-
-      .auth-tab-wrap {
-        display: flex;
-        flex-direction: column;
-        gap: 0.25rem;
-      }
-
-      .header-auth {
-        width: min(360px, 100%);
-        border: 1px solid var(--border);
-        border-radius: 0.65rem;
-        padding: 0.45rem;
-        background: rgba(0, 0, 0, 0.02);
-      }
-
-      .auth-tab-panel {
-        background: #ffffff;
-        box-shadow: none;
-      }
-
-      .header-auth-fields {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(120px, 1fr));
-        gap: 0.35rem;
-      }
-
-      .header-auth label {
-        display: block;
-        margin-bottom: 0.2rem;
-        font-size: 0.72rem;
-        color: var(--text-muted);
-      }
-
-      .header-auth input[type='text'],
-      .header-auth input[type='password'] {
-        width: 100%;
-        font-size: 0.75rem;
-        padding: 0.28rem 0.42rem;
-      }
-
-      .header-auth-actions {
-        margin-top: 0.3rem;
-        display: flex;
-                gap: 0.3rem;
-      }
-
-      .header-auth-status {
-        margin-top: 0.25rem;
-        font-size: 0.72rem;
-      }
-
-      @media (max-width: 960px) {
-        header {
-          min-height: 88px;
-          padding: 10px 12px 0;
-        }
-
-        header::before {
-          background-size: 620px auto;
-          opacity: 0.14;
-        }
-
-        .header-auth-fields {
-          grid-template-columns: 1fr;
-        }
-
-        .header-tabs {
-          position: absolute;
-          left: 12px;
-          bottom: -1px;
-          width: auto;
-          margin-bottom: 0;
-        }
-
-        .auth-tab-panel {
-          position: static;
-          width: 100%;
-          box-shadow: none;
-        }
+        gap: 0.45rem;
       }
 
       .app {
         display: grid;
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.5fr);
         gap: 1rem;
         padding: 1rem;
         max-width: 1280px;
@@ -199,7 +74,8 @@
       .row {
         display: flex;
         gap: 0.6rem;
-                align-items: flex-end;
+        flex-wrap: wrap;
+        align-items: flex-end;
         margin-bottom: 0.5rem;
       }
 
@@ -330,163 +206,227 @@
         max-height: 0;
       }
 
-      .section-icon {
-        width: 1.05rem;
-        height: 1.05rem;
-        display: inline-flex;
-        color: #ec4899;
-        flex: 0 0 auto;
-        margin-right: 0.35rem;
-        vertical-align: text-bottom;
+      .auth-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 0.6rem;
       }
 
-      .section-icon svg {
-        width: 100%;
-        height: 100%;
-        fill: currentColor;
+      .builder-form-page {
+        display: none;
       }
 
-      .section-title-pink {
-        color: #ec4899;
+      .builder-form-page.active {
+        display: block;
       }
 
+      .builder-form-nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.6rem;
+        margin-top: 0.8rem;
+      }
+
+      .builder-form-nav-left,
+      .builder-form-nav-right {
+        display: flex;
+        gap: 0.6rem;
+      }
     </style>
   </head>
 
   <body>
     <header>
-      <nav class="header-tabs" aria-label="Bereich wechseln">
-        <a class="header-tab active" href="./index.html">Builder</a>
-        <a class="header-tab" href="./pool-manager.html">Verwaltung</a>
-                <a class="header-tab" href="./auth.html"><span id="authTabLabel">Anmeldung</span></a>
-      </nav>
+      <h1><span class="logo-dot"></span> Fairteamsbuilder - faire Mannschaften ohne Wählen</h1>
+      <button id="darkModeToggle" class="ghost small">🌓 Dark Mode</button>
     </header>
 
     <div class="app">
+      <!-- =====================  LINK ZUR POOL-VERWALTUNG  ========================== -->
+      <section class="card">
+        <h2>👥 Pools verwalten</h2>
+        <p class="muted">
+          Die Verwaltung von Kategorien, Pools und Spielern erfolgt direkt im Fairteamsbuilder.
+        </p>
+        <a href="./pool-manager.html" style="text-decoration: none">
+          <button class="primary">Zur Verwaltung →</button>
+        </a>
+
+        <h3 style="margin-top: 1rem">🔐 Login (Supabase)</h3>
+        <div class="auth-grid">
+          <div>
+            <label for="authEmail">Benutzername</label>
+            <input id="authEmail" type="text" placeholder="z.B. trainer01" autocomplete="username" />
+          </div>
+          <div>
+            <label for="authPassword">Passwort</label>
+            <input id="authPassword" type="password" autocomplete="current-password" />
+          </div>
+        </div>
+        <div class="row" style="margin-top: 0.6rem">
+          <button id="signInBtn" class="secondary small">Anmelden</button>
+          <button id="signUpBtn" class="ghost small">Registrieren</button>
+          <button id="signOutBtn" class="danger small" disabled>Abmelden</button>
+        </div>
+        <p id="authUserLabel" class="muted">Nicht angemeldet.</p>
+        <p id="authStatus" class="muted" style="margin-top: 0.2rem"></p>
+        <div class="row" style="margin-top: 0.4rem">
+          <button id="cloudLoadBtn" class="ghost small" disabled>Cloud laden</button>
+          <button id="cloudSaveBtn" class="ghost small" disabled>Cloud speichern</button>
+        </div>
+      </section>
+
       <!-- =====================  TEAM GENERATOR  ========================== -->
       <section class="card">
         <div style="display: flex; justify-content: space-between; align-items: center">
-          <h2>
-            <span class="section-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24">
-                <path
-                  d="M18 4h2a1 1 0 0 1 1 1v3a4 4 0 0 1-4 4h-1.1A5 5 0 0 1 13 14.9V17h2a1 1 0 0 1 1 1v2H8v-2a1 1 0 0 1 1-1h2v-2.1A5 5 0 0 1 8.1 12H7a4 4 0 0 1-4-4V5a1 1 0 0 1 1-1h2V3h12v1zm-1 6a2 2 0 0 0 2-2V6h-1v2a2 2 0 0 1-.12.68A4.96 4.96 0 0 1 17 10zM6 6H5v2a2 2 0 0 0 2 2 4.96 4.96 0 0 1-2.88-1.32A2 2 0 0 1 6 8V6z"
-                />
-              </svg>
-            </span>
-            <span class="section-title-pink">Teams generieren</span>
-          </h2>
+          <h2>🏆 Teams generieren</h2>
         </div>
         <div id="statusMessage" class="status-message" aria-live="polite" role="status"></div>
 
-        <h3>1. Pools auswählen</h3>
-        <ul class="pool-list" id="multiPoolList"></ul>
-
-        <h3>2. Anzahl der Teams</h3>
-        <div class="row">
-          <div>
-            <label>Anzahl Teams</label>
-            <input type="number" id="teamCount" value="2" min="2" max="16" />
-          </div>
+        <div id="builderPage1" class="builder-form-page active">
+          <h3>Punkt 1</h3>
+          <p class="muted">Pools auswählen</p>
+          <ul class="pool-list" id="multiPoolList"></ul>
         </div>
 
-        <h3>3. Einstellungen</h3>
+        <div id="builderPage2" class="builder-form-page">
+          <h3>Punkt 2</h3>
+          <div class="row">
+            <div>
+              <label>Anzahl Teams</label>
+              <input type="number" id="teamCount" value="2" min="2" max="16" />
+            </div>
+          </div>
 
-        <div class="setting-group">
-          <label
-            style="
-              display: block;
-              font-size: 0.8rem;
-              color: var(--text-muted);
-              margin-bottom: 0.25rem;
-            "
-          >
-            Verteilungsmodus:
-          </label>
-
-          <label style="display: flex; align-items: center; gap: 0.3rem">
-            <input type="radio" name="distMode" value="fair" checked />
-            <span>Modus a: Spieler fair und zufällig über Spielstärken verteilen</span>
-          </label>
-
-          <label style="display: flex; align-items: center; gap: 0.3rem; margin-top: 0.25rem">
-            <input type="radio" name="distMode" value="manual" />
-            <span
-              >Modus b: Eine frei wählbare Anzahl Spieler manuell zuweisen + Rest zufällig fair
-              verteilen</span
+          <div class="setting-group">
+            <label
+              style="
+                display: block;
+                font-size: 0.8rem;
+                color: var(--text-muted);
+                margin-bottom: 0.25rem;
+              "
             >
-          </label>
-        </div>
+              Verteilungsmodus:
+            </label>
 
-        <button class="secondary" id="prepareAssignmentBtn" style="margin-top: 1rem">
-          Spieler laden
-        </button>
+            <label style="display: flex; align-items: center; gap: 0.3rem">
+              <input type="radio" name="distMode" value="fair" checked />
+              <span>Modus a: Spieler fair und zufällig über Spielstärken verteilen</span>
+            </label>
 
-        <div id="assignmentArea" style="display: none; margin-top: 1rem">
-          <h3>4. Spielerzuweisung</h3>
-          <p class="muted" id="assignmentInfo"></p>
-          <div
-            style="
-              max-height: 240px;
-              overflow-y: auto;
-              border: 1px solid var(--border);
-              border-radius: 0.4rem;
-            "
-          >
-            <table id="assignmentTable" style="width: 100%; border-collapse: collapse"></table>
+            <label style="display: flex; align-items: center; gap: 0.3rem; margin-top: 0.25rem">
+              <input type="radio" name="distMode" value="manual" />
+              <span
+                >Modus b: Eine frei wählbare Anzahl Spieler manuell zuweisen + Rest zufällig fair
+                verteilen</span
+              >
+            </label>
           </div>
 
-          <h3>5. Teamnamen & Farben</h3>
-          <div id="teamNameEditor" style="display: none">
-            <div id="teamNameList"></div>
-          </div>
-
-          <div class="row" style="margin-top: 0.8rem">
-            <button class="primary" id="generateTeamsBtn" disabled>
-              Teamzugehörigkeit generieren
-            </button>
-            <button id="resetAssignmentsBtn" class="ghost small" disabled>
-              Teamzugehörigkeit zurücksetzen
-            </button>
-          </div>
-          <button id="newDistributionBtn" class="danger" style="margin-top: 0.8rem">
-            ↻ Zurück zum Beginn (Pools auswählen)
+          <button class="secondary" id="prepareAssignmentBtn" style="margin-top: 1rem">
+            Spieler laden
           </button>
         </div>
 
-        <div id="teamsResult" style="display: none; margin-top: 1rem">
-          <h3>🎉 Ergebnis</h3>
-          <p class="muted" id="teamsSummary"></p>
-          <div
-            id="teamsGrid"
-            style="
-              display: grid;
-              grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-              gap: 1rem;
-            "
-          ></div>
-
-          <div class="row" style="margin-top: 1rem">
-            <button class="secondary small" id="generateTournamentBtn">Turnier erstellen</button>
-            <button class="secondary small" id="saveSessionBtn">Speichern</button>
-            <button class="secondary small" id="exportTextBtn">Teams kopieren</button>
+        <div class="builder-form-nav">
+          <div class="builder-form-nav-left">
+            <button id="builderBackBtn" class="ghost small" type="button">← Zurück</button>
           </div>
+          <div class="builder-form-nav-right">
+            <button id="builderNextBtn" class="secondary small" type="button">Weiter →</button>
+          </div>
+        </div>
 
-          <div
-            id="tournamentList"
-            class="turnier-list"
-            style="
-              display: none;
-              margin-top: 1rem;
-              resize: vertical;
-              overflow: auto;
-              min-height: 160px;
-              max-height: 80vh;
-            "
-          ></div>
+        <div id="builderPage3" class="builder-form-page">
+          <h3>Punkt 3</h3>
+          <p id="builderPoint3Hint" class="muted">Bitte zuerst in Punkt 2 auf „Spieler laden“ klicken.</p>
+
+          <div id="assignmentArea" style="display: none; margin-top: 1rem">
+            <h3>Spielerzuweisung</h3>
+            <p class="muted" id="assignmentInfo"></p>
+            <div
+              style="
+                max-height: 240px;
+                overflow-y: auto;
+                border: 1px solid var(--border);
+                border-radius: 0.4rem;
+              "
+            >
+              <table id="assignmentTable" style="width: 100%; border-collapse: collapse"></table>
+            </div>
+
+            <h3>Teamnamen & Farben</h3>
+            <div id="teamNameEditor" style="display: none">
+              <div id="teamNameList"></div>
+            </div>
+
+            <div class="row" style="margin-top: 0.8rem">
+              <button class="primary" id="generateTeamsBtn" disabled>
+                Teamzugehörigkeit generieren
+              </button>
+              <button id="resetAssignmentsBtn" class="ghost small" disabled>
+                Teamzugehörigkeit zurücksetzen
+              </button>
+            </div>
+            <button id="newDistributionBtn" class="danger" style="margin-top: 0.8rem">
+              ↻ Zurück zum Beginn (Pools auswählen)
+            </button>
+          </div>
+        </div>
+
+        <div id="builderPage4" class="builder-form-page">
+          <h3>Ergebnis</h3>
+          <p id="builderResultHint" class="muted">
+            Bitte in Punkt 3 auf „Teamzugehörigkeit generieren“ klicken.
+          </p>
+
+          <div id="teamsResult" style="display: none; margin-top: 1rem">
+            <h3>🎉 Ergebnis</h3>
+            <p class="muted" id="teamsSummary"></p>
+            <div
+              id="teamsGrid"
+              style="
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+                gap: 1rem;
+              "
+            ></div>
+
+            <div class="row" style="margin-top: 1rem">
+              <button class="secondary small" id="generateTournamentBtn">Turnier erstellen</button>
+              <button class="secondary small" id="saveSessionBtn">Speichern</button>
+              <button class="secondary small" id="exportTextBtn">Teams kopieren</button>
+            </div>
+
+            <div
+              id="tournamentList"
+              class="turnier-list"
+              style="
+                display: none;
+                margin-top: 1rem;
+                resize: vertical;
+                overflow: auto;
+                min-height: 160px;
+                max-height: 80vh;
+              "
+            ></div>
+          </div>
         </div>
       </section>
     </div>
+
+    <!-- =====================  GESPEICHERTE TEAMS  ========================== -->
+    <section class="card" style="max-width: 900px; margin: 1rem auto">
+      <h2>💾 Gespeicherte Team-Konfigurationen</h2>
+      <div id="savedSessions"></div>
+
+      <div class="row" style="margin-top: 1rem">
+        <button id="exportJSONBtn" class="ghost small">JSON exportieren</button>
+        <button id="importJSONBtn" class="ghost small">JSON importieren</button>
+      </div>
+    </section>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="./supabase-config.local.js"></script>
