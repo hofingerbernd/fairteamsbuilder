@@ -46,8 +46,7 @@ function prepareAssignment() {
   if (resultHint) resultHint.style.display = 'block';
   document.getElementById('tournamentList').style.display = 'none';
 
-  document.getElementById('assignmentInfo').textContent =
-    `${players.length} Spieler geladen. Haken entfernen, wenn jemand heute fehlt.`;
+  document.getElementById('assignmentInfo').textContent = '';
   setStatus(`${players.length} Spieler wurden geladen.`, 'success');
   return true;
 }
