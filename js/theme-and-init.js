@@ -121,9 +121,6 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('exportJSONBtn')?.addEventListener('click', exportJSON);
   document.getElementById('importJSONBtn')?.addEventListener('click', importJSON);
 
-  // Neue Verteilung
-  document.getElementById('newDistributionBtn')?.addEventListener('click', newDistribution);
-
   // Formularseiten (Schritt 1 / Schritt 2 / Schritt 3 / Schritt 4)
   initBuilderFormPages();
 });
