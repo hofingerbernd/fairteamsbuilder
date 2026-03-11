@@ -51,7 +51,7 @@
         display: inline-flex;
         align-items: center;
         text-decoration: none;
-        padding: 0.38rem 0.75rem;
+        padding: 0.56rem 1.05rem;
         border: 1px solid #7dd3fc;
         background: #e0f2fe;
         color: #000000;
@@ -59,7 +59,7 @@
         border-top-right-radius: 0.65rem;
         border-bottom-left-radius: 0.2rem;
         border-bottom-right-radius: 0.2rem;
-        font-size: 0.78rem;
+        font-size: 0.96rem;
         font-weight: 600;
       }
 
@@ -77,11 +77,11 @@
       }
 
       .auth-card {
-        width: min(460px, 100%);
+        width: min(560px, 100%);
         background: #fff;
         border: 1px solid var(--border);
-        border-radius: 0.65rem;
-        padding: 1rem;
+        border-radius: 0.8rem;
+        padding: 1.2rem;
       }
 
       .auth-fields {
@@ -97,14 +97,14 @@
               }
 
       .auth-status {
-        margin-top: 0.35rem;
-        font-size: 0.85rem;
+        margin-top: 0.42rem;
+        font-size: 1rem;
       }
 
       @media (max-width: 720px) {
         header {
-          min-height: 88px;
-          padding: 10px 12px 0;
+          min-height: 108px;
+          padding: 12px 14px 0;
         }
 
         header::before {
@@ -115,8 +115,15 @@
         .header-tabs {
           position: absolute;
           left: 12px;
+          right: 12px;
           bottom: -1px;
           width: auto;
+          gap: 0.5rem;
+        }
+
+        .header-tab {
+          font-size: 1.02rem;
+          padding: 0.62rem 1rem;
         }
 
         .auth-fields {

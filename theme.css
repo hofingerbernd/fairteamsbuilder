@@ -50,8 +50,8 @@ header h1 .logo-dot {
 button {
   border: none;
   border-radius: 999px;
-  padding: 0.45rem 0.9rem;
-  font-size: 0.82rem;
+  padding: 0.56rem 1.05rem;
+  font-size: 0.9rem;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
@@ -77,8 +77,8 @@ button.danger:hover {
 }
 
 button.small {
-  padding: 0.3rem 0.65rem;
-  font-size: 0.72rem;
+  padding: 0.42rem 0.8rem;
+  font-size: 0.82rem;
 }
 
 button:disabled {
@@ -88,17 +88,17 @@ button:disabled {
 
 h2 {
   margin: 0 0 0.4rem 0;
-  font-size: 1rem;
+  font-size: 1.1rem;
 }
 
 h3 {
   margin-top: 1rem;
   margin-bottom: 0.5rem;
-  font-size: 0.95rem;
+  font-size: 1.02rem;
 }
 
 label {
-  font-size: 0.8rem;
+  font-size: 0.9rem;
   color: var(--text-muted);
   margin-bottom: 0.25rem;
   display: inline-block;
@@ -116,7 +116,7 @@ select {
   border-radius: 0.5rem;
   border: 1px solid var(--border);
   background: rgba(0, 0, 0, 0.02);
-  font-size: 0.86rem;
+  font-size: 0.95rem;
   color: var(--text);
 }
 
@@ -125,4 +125,47 @@ select {
   border: 1px solid var(--border);
   border-radius: 0.75rem;
   box-shadow: var(--shadow-soft);
+}
+
+@media (max-width: 960px) {
+  body {
+    font-size: 18px;
+  }
+
+  button {
+    padding: 0.72rem 1.28rem;
+    font-size: 1.02rem;
+  }
+
+  button.small {
+    padding: 0.58rem 1rem;
+    font-size: 0.94rem;
+  }
+
+  h2 {
+    font-size: 1.28rem;
+  }
+
+  h3 {
+    font-size: 1.12rem;
+  }
+
+  label {
+    font-size: 0.98rem;
+  }
+
+  input[type='text'],
+  input[type='password'],
+  input[type='number'],
+  input[type='file'],
+  input[type='color'],
+  textarea,
+  select {
+    font-size: 1.02rem;
+    padding: 0.62rem 0.72rem;
+  }
+
+  .card {
+    border-radius: 0.9rem;
+  }
 }
