@@ -6,10 +6,12 @@ function renderTeamNameEditor(teamCount) {
   const list = document.getElementById('teamNameList');
   editor.style.display = 'block';
   list.innerHTML = '';
+  list.style.cssText =
+    'display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:.5rem;';
 
   for (let i = 0; i < teamCount; i++) {
     const row = document.createElement('div');
-    row.style.cssText = 'display:flex;gap:.5rem;margin-bottom:.3rem;align-items:center;';
+    row.style.cssText = 'display:flex;gap:.5rem;align-items:center;';
 
     const nameInput = document.createElement('input');
     nameInput.type = 'text';
