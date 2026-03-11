@@ -380,7 +380,7 @@
 
     const byUserId = await authState.client
       .from(TABLE)
-      .select('user_id, app_state')
+      .select('user_id, app_state, updated_at')
       .eq('user_id', authState.user.id)
       .maybeSingle();
     if (byUserId.error) {
@@ -396,7 +396,7 @@
 
     const byEmail = await authState.client
       .from(TABLE)
-      .select('user_id, app_state')
+      .select('user_id, app_state, updated_at')
       .eq('email', authState.user.email)
       .maybeSingle();
     if (byEmail.error) {
@@ -437,6 +437,33 @@
 
     try {
       const cloudCounts = getCountsFromStateLike(data.app_state);
+      const localState =
+        typeof global.getState === 'function'
+          ? global.getState()
+          : global.state && typeof global.state === 'object'
+            ? global.state
+            : null;
+      const localCounts = getCountsFromStateLike(localState);
+      const localUpdatedAt =
+        typeof global.getLocalStateUpdatedAt === 'function' ? global.getLocalStateUpdatedAt() : 0;
+      const remoteUpdatedAt = Date.parse(String(data.updated_at || ''));
+      const hasLocalData = localCounts.categories > 0 || localCounts.pools > 0;
+      const hasRemoteTimestamp = Number.isFinite(remoteUpdatedAt) && remoteUpdatedAt > 0;
+
+      if (
+        hasLocalData &&
+        localUpdatedAt > 0 &&
+        hasRemoteTimestamp &&
+        localUpdatedAt > remoteUpdatedAt + 1000
+      ) {
+        setSyncStatus(
+          `Lokaler Stand (${localCounts.categories}K/${localCounts.pools}P) ist neuer als Cloud - lokaler Stand bleibt aktiv`,
+          'info'
+        );
+        saveCloudState({ silent: true });
+        return { ok: true, loaded: false, reason: 'local_newer' };
+      }
+
       if (typeof global.applyImportedState !== 'function') {
         setSyncStatus(`Verbunden (${cloudCounts.categories}K/${cloudCounts.pools}P in Cloud)`, 'success');
         return { ok: true, loaded: false, reason: 'no_state_target' };
@@ -488,7 +515,11 @@
     let lastResult = { ok: false, loaded: false, reason: 'unknown' };
     for (let attempt = 0; attempt < retries; attempt++) {
       lastResult = await loadCloudState({ silent });
-      if (lastResult && lastResult.ok && (lastResult.loaded || lastResult.reason === 'empty')) {
+      if (
+        lastResult &&
+        lastResult.ok &&
+        (lastResult.loaded || lastResult.reason === 'empty' || lastResult.reason === 'local_newer')
+      ) {
         return lastResult;
       }
       await new Promise((resolve) => setTimeout(resolve, delayMs));

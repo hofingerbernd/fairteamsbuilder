@@ -31,6 +31,16 @@ function getStorageKey() {
   return `${STORAGE_KEY_BASE}__${storageScope}`;
 }
 
+function getStorageUpdatedAtKey() {
+  return `${getStorageKey()}__updated_at`;
+}
+
+function getLocalStateUpdatedAt() {
+  const raw = localStorage.getItem(getStorageUpdatedAtKey());
+  const ts = parseInt(raw, 10);
+  return Number.isFinite(ts) ? ts : 0;
+}
+
 function setStorageScope(scope) {
   const nextScope = String(scope || '').trim();
   storageScope = nextScope || 'signed_out';
@@ -58,6 +68,7 @@ function loadState() {
 function saveState() {
   try {
     localStorage.setItem(getStorageKey(), JSON.stringify(state));
+    localStorage.setItem(getStorageUpdatedAtKey(), String(Date.now()));
     if (typeof window !== 'undefined' && typeof window.dispatchEvent === 'function') {
       window.dispatchEvent(new CustomEvent('fairteams:state-saved'));
     }
