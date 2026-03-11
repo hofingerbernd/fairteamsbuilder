@@ -182,4 +182,16 @@ select {
     font-size: 1.14rem;
     line-height: 1.45;
   }
+
+  .row {
+    flex-wrap: wrap;
+  }
+
+  .row button {
+    flex: 1 1 100%;
+    width: 100%;
+    justify-content: center;
+    white-space: normal;
+    text-align: center;
+  }
 }
