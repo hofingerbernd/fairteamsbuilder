@@ -161,8 +161,8 @@ select {
   input[type='color'],
   textarea,
   select {
-    font-size: 1.02rem;
-    padding: 0.62rem 0.72rem;
+    font-size: 1.1rem;
+    padding: 0.68rem 0.78rem;
   }
 
   .card {
