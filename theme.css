@@ -168,4 +168,18 @@ select {
   .card {
     border-radius: 0.9rem;
   }
+
+  .card,
+  .page,
+  .app {
+    font-size: 1.06rem;
+  }
+
+  .card p,
+  .card li,
+  .card span,
+  .card .muted {
+    font-size: 1.02rem;
+    line-height: 1.45;
+  }
 }
