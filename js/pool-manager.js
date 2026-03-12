@@ -257,7 +257,7 @@ function isValidPositiveInt(v) {
 
 function normalizeSkill(v) {
   const n = parseInt(v, 10);
-  return n >= 1 && n <= 4 ? n : 3;
+  return n >= 1 && n <= 5 ? n : 3;
 }
 
 function normalizeCategories(categoriesArr) {
@@ -549,7 +549,7 @@ function importCategoriesFromCSV(text) {
 
       if (playerName) {
         const skillNum = parseInt(skillRaw, 10);
-        const safeSkill = skillNum >= 1 && skillNum <= 4 ? skillNum : 3;
+        const safeSkill = skillNum >= 1 && skillNum <= 5 ? skillNum : 3;
         poolsMap.get(poolName).push({ name: playerName, skill: safeSkill });
       }
     }

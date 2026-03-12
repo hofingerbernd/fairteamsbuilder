@@ -44,9 +44,9 @@ function generateTeams() {
   let unassigned = [];
   const normalizeSkill = (skill) => {
     const n = Number(skill);
-    return Number.isFinite(n) && n >= 1 && n <= 4 ? n : 4;
+    return Number.isFinite(n) && n >= 1 && n <= 5 ? n : 5;
   };
-  const getStrengthPoints = (player) => 5 - normalizeSkill(player.skill);
+  const getStrengthPoints = (player) => 6 - normalizeSkill(player.skill);
 
   if (mode === 'manual') {
     // manuelle Zuweisungen auswerten
@@ -76,13 +76,13 @@ function generateTeams() {
   if (mode === 'fair') {
     // Stärke-basiert verteilen:
     // 1er zuerst, dann 2er usw.; jeweils auf aktuell schwächere Teams.
-    const groups = { 1: [], 2: [], 3: [], 4: [] };
+    const groups = { 1: [], 2: [], 3: [], 4: [], 5: [] };
     unassigned.forEach((p) => {
       const s = normalizeSkill(p.skill);
       groups[s].push(p);
     });
 
-    for (let s = 1; s <= 4; s++) {
+    for (let s = 1; s <= 5; s++) {
       const playersBySkill = shuffle(groups[s]);
       for (const p of playersBySkill) {
         const candidates = [];
@@ -176,8 +176,8 @@ function renderTeamsResult(teams, cfg) {
 
     const strengthPoints = t.players.reduce((sum, p) => {
       const skill = Number(p.skill);
-      const normalized = Number.isFinite(skill) && skill >= 1 && skill <= 4 ? skill : 4;
-      return sum + (5 - normalized);
+      const normalized = Number.isFinite(skill) && skill >= 1 && skill <= 5 ? skill : 5;
+      return sum + (6 - normalized);
     }, 0);
     const strengthBadge = document.createElement('span');
     strengthBadge.className = 'badge';

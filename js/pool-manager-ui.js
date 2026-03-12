@@ -274,11 +274,11 @@ function renderPlayers() {
         return;
       }
 
-      const nextSkillRaw = prompt('Neue Stärke (1-4):', String(player.skill));
+      const nextSkillRaw = prompt('Neue Stärke (1-5):', String(player.skill));
       if (nextSkillRaw === null) return;
       const nextSkill = parseInt(nextSkillRaw, 10);
-      if (![1, 2, 3, 4].includes(nextSkill)) {
-        setStatus('Stärke muss zwischen 1 und 4 liegen.', 'error');
+      if (![1, 2, 3, 4, 5].includes(nextSkill)) {
+        setStatus('Stärke muss zwischen 1 und 5 liegen.', 'error');
         return;
       }
 
